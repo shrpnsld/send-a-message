@@ -16,12 +16,12 @@ namespace tfm
 	{
 		for (auto handler : handlers)
 		{
-			_handlers.insert(std::make_pair(handler->signature(), handler));
+			_handlers.insert(std::make_pair(handler->signature(), std::unique_ptr<super_handler>(handler)));
 		}
 	}
 
 
-	void receive::dispatch(std::shared_ptr<super_message> message) const
+	void receive::dispatch(std::unique_ptr<super_message> message) const
 	{$f
 		auto iterator = _handlers.find(message->signature());
 

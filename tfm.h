@@ -4,6 +4,7 @@
 #include <thread>
 #include <unordered_map>
 #include <utility>
+#include <memory>
 
 #include "thread.h"
 #include "message.h"
@@ -27,10 +28,10 @@ namespace tfm
 	public:
 		receive(std::initializer_list<super_handler *> handlers);
 
-		void dispatch(std::shared_ptr<super_message> message) const;
+		void dispatch(std::unique_ptr<super_message> message) const;
 
 	private:
-		std::unordered_map<std::type_index, super_handler *> _handlers;
+		std::unordered_map<std::type_index, std::unique_ptr<super_handler>> _handlers;
 	};
 
 
