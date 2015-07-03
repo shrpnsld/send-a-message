@@ -1,16 +1,22 @@
 #include "thread.h"
 
 
-namespace tfm
+namespace sam
 {
 
-	thread::thread(std::thread::native_handle_type handle)
-		: _handle(handle)
+	thread::thread()
+		: _message_queue()
 	{
 	}
 
 
-	queue<super_message> &thread::message_queue()
+	thread::thread(thread &&another)
+		: _message_queue(std::move(another._message_queue))
+	{
+	}
+
+
+	queue<message> &thread::message_queue()
 	{
 		return _message_queue;
 	}

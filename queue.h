@@ -6,10 +6,8 @@
 #include <condition_variable>
 #include <cassert>
 
-#include "pretty_output.h"
 
-
-namespace tfm
+namespace sam
 {
 
 	template <typename Type_t>
@@ -17,6 +15,7 @@ namespace tfm
 	{
 	public:
 		queue();
+		queue(queue &&another);
 		~queue();
 
 		void push(std::shared_ptr<Type_t> data);
@@ -30,10 +29,8 @@ namespace tfm
 			std::unique_ptr<node_t> next;
 		};
 
-
 		node_t *_synchronized_get_tail();
 		std::shared_ptr<Type_t> _pop();
-
 
 		std::unique_ptr<node_t> _head;
 		node_t *_tail;
@@ -46,6 +43,12 @@ namespace tfm
 	template <typename Type_t>
 	queue<Type_t>::queue()
 		: _head(new node_t), _tail(_head.get())
+	{
+	}
+
+
+	template <typename Type_t>
+	queue<Type_t>::queue(queue &&)
 	{
 	}
 

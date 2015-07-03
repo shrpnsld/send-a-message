@@ -1,21 +1,32 @@
 #include "message.h"
 
 
-namespace tfm
+namespace sam
 {
 
 	//
 	// Definitions
 
-	super_message::super_message(const std::type_index &signature)
-		: _signature(signature)
+	super_fields::~super_fields()
 	{
 	}
 
 
-	const std::type_index &super_message::signature() const
+	message::message(std::type_index signature, std::shared_ptr<super_fields> data)
+		: _signature(signature), _data(data)
+	{
+	}
+
+
+	const std::type_index &message::signature() const
 	{
 		return _signature;
+	}
+
+
+	void *message::data()
+	{
+		return _data->void_ptr();
 	}
 
 }

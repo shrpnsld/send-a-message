@@ -7,19 +7,19 @@
 #include "queue.h"
 
 
-namespace tfm
+namespace sam
 {
 
 	class thread
 	{
 	public:
-		thread(std::thread::native_handle_type handle);
+		thread();
+		thread(thread &&another);
 
-		queue<super_message> &message_queue();
+		queue<message> &message_queue();
 
 	private:
-		std::thread::native_handle_type _handle;
-		queue<super_message> _message_queue;
+		queue<message> _message_queue;
 	};
 
 }

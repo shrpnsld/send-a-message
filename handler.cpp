@@ -1,7 +1,7 @@
 #include "handler.h"
 
 
-namespace tfm
+namespace sam
 {
 
 	//
@@ -9,6 +9,11 @@ namespace tfm
 
 	super_handler::super_handler(const std::type_index &signature)
 		: _signature(signature)
+	{
+	}
+
+
+	super_handler::~super_handler()
 	{
 	}
 
