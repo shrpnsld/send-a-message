@@ -43,7 +43,7 @@ namespace sam
 	template <typename ...Arguments_t>
 	void send(std::thread::id id, Arguments_t &&...arguments)
 	{
-		std::shared_ptr<details::message> message_ptr(new details::message(std::move(details::new_message(std::forward<Arguments_t>(arguments)...))));
+		std::shared_ptr<details::message> message_ptr(details::new_shared_message(std::forward<Arguments_t>(arguments)...));
 		auto message_queue = details::message_queue_for_thread(id);
 		message_queue->push(message_ptr);
 	}
@@ -86,7 +86,7 @@ namespace sam
 		std::unordered_map<std::type_index, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables)
 		{
 			std::unordered_map<std::type_index, std::shared_ptr<super_handler>> handlers;
-			unpack(insert_handler(handlers, new_handler(callables))...);
+			unpack(insert_handler(handlers, new_shared_handler(callables))...);
 
 			return handlers;
 		}

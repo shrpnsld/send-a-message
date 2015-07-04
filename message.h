@@ -54,7 +54,7 @@ namespace sam
 
 
 		template <typename ...Types_t>
-		message new_message(Types_t &&...arguments);
+		std::shared_ptr<message> new_shared_message(Types_t &&...arguments);
 
 
 
@@ -77,11 +77,11 @@ namespace sam
 
 
 		template <typename ...Types_t>
-		message new_message(Types_t &&...arguments)
+		std::shared_ptr<message> new_shared_message(Types_t &&...arguments)
 		{
 			signature_t signature = new_signature<Types_t...>();
 			std::shared_ptr<super_fields> data{new fields<Types_t...>(std::forward<Types_t>(arguments)...)};
-			return message(signature, data);
+			return std::shared_ptr<message>(new message(signature, data));
 		}
 
 	}

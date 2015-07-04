@@ -76,19 +76,19 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(std::function<hretval_t (Arguments_t...)> callable);
+		std::shared_ptr<super_handler> new_shared_handler(std::function<hretval_t (Arguments_t...)> callable);
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(hretval_t (*function_pointer)(Arguments_t...));
+		std::shared_ptr<super_handler> new_shared_handler(hretval_t (*function_pointer)(Arguments_t...));
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(std::function<void (Arguments_t...)> callable);
+		std::shared_ptr<super_handler> new_shared_handler(std::function<void (Arguments_t...)> callable);
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(void (*function_pointer)(Arguments_t...));
+		std::shared_ptr<super_handler> new_shared_handler(void (*function_pointer)(Arguments_t...));
 
 
 
@@ -129,30 +129,30 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(std::function<hretval_t (Arguments_t...)> callable)
+		std::shared_ptr<super_handler> new_shared_handler(std::function<hretval_t (Arguments_t...)> callable)
 		{
 			return std::shared_ptr<super_handler>(new handler<hretval_t (Arguments_t...)>(callable));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(hretval_t (*function_pointer)(Arguments_t...))
+		std::shared_ptr<super_handler> new_shared_handler(hretval_t (*function_pointer)(Arguments_t...))
 		{
-			return new_handler(std::function<hretval_t (Arguments_t...)>(function_pointer));
+			return new_shared_handler(std::function<hretval_t (Arguments_t...)>(function_pointer));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(std::function<void (Arguments_t...)> callable)
+		std::shared_ptr<super_handler> new_shared_handler(std::function<void (Arguments_t...)> callable)
 		{
 			return std::shared_ptr<super_handler>(new handler<void (Arguments_t...)>(callable));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_handler(void (*function_pointer)(Arguments_t...))
+		std::shared_ptr<super_handler> new_shared_handler(void (*function_pointer)(Arguments_t...))
 		{
-			return new_handler(std::function<void (Arguments_t...)>(function_pointer));
+			return new_shared_handler(std::function<void (Arguments_t...)>(function_pointer));
 		}
 
 	}
