@@ -1,7 +1,5 @@
 #pragma once
 
-#include <typeindex>
-#include <functional>
 #include <utility>
 #include <memory>
 
@@ -44,13 +42,13 @@ namespace sam
 		class message
 		{
 		public:
-			message(std::type_index signature, std::shared_ptr<super_fields> data);
+			message(signature_t signature, std::shared_ptr<super_fields> data);
 
-			const std::type_index &signature() const;
+			const signature_t &signature() const;
 			void *data();
 
 		private:
-			std::type_index _signature;
+			signature_t _signature;
 			std::shared_ptr<super_fields> _data;
 		};
 
@@ -81,7 +79,7 @@ namespace sam
 		template <typename ...Types_t>
 		message new_message(Types_t &&...arguments)
 		{
-			std::type_index signature{new_signature<Types_t...>()};
+			signature_t signature = new_signature<Types_t...>();
 			std::shared_ptr<super_fields> data{new fields<Types_t...>(std::forward<Types_t>(arguments)...)};
 			return message(signature, data);
 		}

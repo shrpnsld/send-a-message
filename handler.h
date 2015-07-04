@@ -1,6 +1,5 @@
 #pragma once
 
-#include <typeindex>
 #include <functional>
 #include <memory>
 
@@ -31,15 +30,15 @@ namespace sam
 		class super_handler
 		{
 		public:
-			super_handler(const std::type_index &signature);
+			super_handler(const signature_t &signature);
 			virtual ~super_handler() = 0;
 
-			const std::type_index &signature() const;
+			const signature_t &signature() const;
 
 			virtual hretval_t do_call(void *context) = 0;
 
 		private:
-			std::type_index _signature;
+			signature_t _signature;
 		};
 
 

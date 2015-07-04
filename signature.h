@@ -13,14 +13,16 @@ namespace sam
 		//
 		// Declarations
 
+		typedef std::type_index signature_t;
+
 		template <typename ...Types_t>
-		struct signature_t
+		struct pack_t
 		{
 		};
 
 
 		template <typename ...Types_t>
-		std::type_index new_signature();
+		signature_t new_signature();
 
 
 
@@ -28,9 +30,9 @@ namespace sam
 		// Definitions
 
 		template <typename ...Types_t>
-		std::type_index new_signature()
+		signature_t new_signature()
 		{
-			return std::type_index(typeid(signature_t<typename std::remove_reference<Types_t>::type...>));
+			return std::type_index(typeid(pack_t<typename std::remove_reference<Types_t>::type...>));
 		}
 
 	}
