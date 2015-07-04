@@ -1,6 +1,5 @@
 #include <map>
 #include <mutex>
-#include <cassert>
 
 #include "queue.h"
 #include "send_a_message.h"

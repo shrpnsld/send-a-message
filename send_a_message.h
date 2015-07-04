@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <memory>
+#include <cassert>
 
 #include "thread.h"
 #include "message.h"
