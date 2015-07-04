@@ -10,17 +10,22 @@
 namespace sam
 {
 
-	class thread
+	namespace details
 	{
-	public:
-		thread();
-		thread(thread &&another);
 
-		queue<message> &message_queue();
+		class thread
+		{
+		public:
+			thread();
+			thread(thread &&another);
 
-	private:
-		queue<message> _message_queue;
-	};
+			queue<message> &message_queue();
+
+		private:
+			queue<message> _message_queue;
+		};
+
+	}
 
 }
 
