@@ -7,7 +7,7 @@
 #include <memory>
 #include <cassert>
 
-#include "thread.h"
+#include "queue.h"
 #include "message.h"
 #include "handler.h"
 
