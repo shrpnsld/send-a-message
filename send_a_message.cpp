@@ -11,9 +11,15 @@ namespace sam
 	namespace details
 	{
 
+		//
+		// Declarations
+
 		std::mutex _mutex;
 		std::map<std::thread::id, std::shared_ptr<queue<message>>> _threads;
 
+
+		//
+		// Definitions
 
 		std::shared_ptr<queue<message>> &message_queue_for_thread(std::thread::id id)
 		{

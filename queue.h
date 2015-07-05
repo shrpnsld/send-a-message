@@ -13,6 +13,9 @@ namespace sam
 	namespace details
 	{
 
+		//
+		// Declarations
+
 		template <typename Type_t>
 		class queue
 		{
@@ -42,6 +45,9 @@ namespace sam
 			std::condition_variable _is_empty;
 		};
 
+
+		//
+		// Definitions
 
 		template <typename Type_t>
 		queue<Type_t>::queue()

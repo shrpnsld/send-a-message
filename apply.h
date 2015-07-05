@@ -7,6 +7,9 @@ namespace sam
 	namespace details
 	{
 
+		//
+		// Declarations
+
 		template <std::size_t ...>
 		struct sequence
 		{
@@ -38,6 +41,15 @@ namespace sam
 		};
 
 
+		template <typename Return_t, typename ...Arguments_t, size_t ...Indices>
+		Return_t apply_impl(const std::function<Return_t (Arguments_t...)> &callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>);
+
+		template <typename Return_t, typename ...Arguments_t>
+		Return_t apply(const std::function<Return_t (Arguments_t...)> &callable, const std::tuple<Arguments_t...> &arguments);
+
+
+		//
+		// Definitions
 
 		template <typename Return_t, typename ...Arguments_t, size_t ...Indices>
 		Return_t apply_impl(const std::function<Return_t (Arguments_t...)> &callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>)

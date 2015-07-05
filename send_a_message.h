@@ -15,6 +15,9 @@
 namespace sam
 {
 
+	//
+	// Declarations
+
 	template <typename ...Arguments_t>
 	void send(std::thread::id id, Arguments_t &&...arguments);
 
@@ -39,6 +42,8 @@ namespace sam
 	}
 
 
+	//
+	// Definitions
 
 	template <typename ...Arguments_t>
 	void send(std::thread::id id, Arguments_t &&...arguments)
