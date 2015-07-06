@@ -19,7 +19,7 @@ namespace sam
 	// Declarations
 
 	template <typename ...Arguments_t>
-	void send(std::thread::id id, Arguments_t &&...arguments);
+	void send(std::thread &thread, Arguments_t &&...arguments);
 
 	template <typename ...Callables_t>
 	void receive(Callables_t ...callables);
@@ -46,10 +46,10 @@ namespace sam
 	// Definitions
 
 	template <typename ...Arguments_t>
-	void send(std::thread::id id, Arguments_t &&...arguments)
+	void send(std::thread &thread, Arguments_t &&...arguments)
 	{
 		std::shared_ptr<details::message> message_ptr(details::new_shared_message(std::forward<Arguments_t>(arguments)...));
-		auto message_queue = details::message_queue_for_thread(id);
+		auto message_queue = details::message_queue_for_thread(thread.get_id());
 		message_queue->push(message_ptr);
 	}
 
