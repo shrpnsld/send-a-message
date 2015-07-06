@@ -37,6 +37,14 @@ namespace sam
 		}
 
 
+		void remove_message_queue_for_thread(std::thread::id id)
+		{
+			std::lock_guard<std::mutex> lock_guard(_mutex);
+
+			_threads.erase(id);
+		}
+
+
 		int insert_handler(std::unordered_map<std::type_index, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler)
 		{
 			handlers.insert(std::make_pair(handler->signature(), handler));

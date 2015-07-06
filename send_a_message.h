@@ -30,6 +30,7 @@ namespace sam
 	{
 
 		std::shared_ptr<queue<message>> &message_queue_for_thread(std::thread::id id);
+		void remove_message_queue_for_thread(std::thread::id id);
 
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
@@ -74,6 +75,8 @@ namespace sam
 				break;
 			}
 		}
+
+		details::remove_message_queue_for_thread(std::this_thread::get_id());
 	}
 
 
