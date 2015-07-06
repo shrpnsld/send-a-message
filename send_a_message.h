@@ -10,6 +10,7 @@
 #include "queue.h"
 #include "message.h"
 #include "handler.h"
+#include "signature.h"
 
 
 namespace sam
@@ -35,10 +36,12 @@ namespace sam
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
 
-		int insert_handler(std::unordered_map<std::type_index, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler);
+		int register_handler(std::unordered_map<std::type_index, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler);
 
 		template <typename ...Callables_t>
 		std::unordered_map<std::type_index, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables);
+
+		hretval_t default_hretval_handle(hretval_t hretval);
 
 	}
 
@@ -59,6 +62,10 @@ namespace sam
 	void receive(Callables_t ...callables)
 	{
 		auto handlers = details::register_handlers(callables...);
+		if (handlers.find(details::new_signature<hretval_t>()) == handlers.end())
+		{
+			register_handler(handlers, details::new_shared_handler(details::default_hretval_handle));
+		}
 
 		auto message_queue = details::message_queue_for_thread(std::this_thread::get_id());
 		for (;;)
@@ -94,7 +101,7 @@ namespace sam
 		std::unordered_map<std::type_index, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables)
 		{
 			std::unordered_map<std::type_index, std::shared_ptr<super_handler>> handlers;
-			unpack(insert_handler(handlers, new_shared_handler(callables))...);
+			unpack(register_handler(handlers, new_shared_handler(callables))...);
 
 			return handlers;
 		}

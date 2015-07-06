@@ -45,10 +45,16 @@ namespace sam
 		}
 
 
-		int insert_handler(std::unordered_map<std::type_index, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler)
+		int register_handler(std::unordered_map<std::type_index, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler)
 		{
 			handlers.insert(std::make_pair(handler->signature(), handler));
 			return 0;
+		}
+
+
+		hretval_t default_hretval_handle(hretval_t hretval)
+		{
+			return hretval;
 		}
 
 	}
