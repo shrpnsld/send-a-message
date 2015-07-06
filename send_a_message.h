@@ -41,7 +41,7 @@ namespace sam
 		template <typename ...Callables_t>
 		std::unordered_map<std::type_index, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables);
 
-		hretval_t default_hretval_handle(hretval_t hretval);
+		ctlcode_t default_control_code_handler(ctlcode_t control_code);
 
 	}
 
@@ -62,9 +62,9 @@ namespace sam
 	void receive(Callables_t ...callables)
 	{
 		auto handlers = details::register_handlers(callables...);
-		if (handlers.find(details::new_signature<hretval_t>()) == handlers.end())
+		if (handlers.find(details::new_signature<ctlcode_t>()) == handlers.end())
 		{
-			register_handler(handlers, details::new_shared_handler(details::default_hretval_handle));
+			register_handler(handlers, details::new_shared_handler(details::default_control_code_handler));
 		}
 
 		auto message_queue = details::message_queue_for_thread(std::this_thread::get_id());
@@ -76,8 +76,8 @@ namespace sam
 			assert(iterator != handlers.end());
 
 			std::shared_ptr<details::super_handler> handler = iterator->second;
-			hretval_t retval = handler->do_call(message->data());
-			if (retval == STOP)
+			ctlcode_t control_code = handler->do_call(message->data());
+			if (control_code == STOP)
 			{
 				break;
 			}

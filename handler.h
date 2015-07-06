@@ -13,7 +13,7 @@ namespace sam
 	//
 	// Declarations
 
-	enum hretval_t
+	enum ctlcode_t
 	{
 		CONTINUE = 1,
 		STOP = -1
@@ -35,7 +35,7 @@ namespace sam
 
 			const signature_t &signature() const;
 
-			virtual hretval_t do_call(void *context) = 0;
+			virtual ctlcode_t do_call(void *context) = 0;
 
 		private:
 			signature_t _signature;
@@ -48,16 +48,16 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		class handler<hretval_t (Arguments_t...)>
+		class handler<ctlcode_t (Arguments_t...)>
 			: public super_handler
 		{
 		public:
-			handler(std::function<hretval_t (Arguments_t...)> callable);
+			handler(std::function<ctlcode_t (Arguments_t...)> callable);
 
-			virtual hretval_t do_call(void *context) override;
+			virtual ctlcode_t do_call(void *context) override;
 
 		private:
-			std::function<hretval_t (Arguments_t...)> _callable;
+			std::function<ctlcode_t (Arguments_t...)> _callable;
 		};
 
 
@@ -68,7 +68,7 @@ namespace sam
 		public:
 			handler(std::function<void (Arguments_t...)> callable);
 
-			virtual hretval_t do_call(void *context) override;
+			virtual ctlcode_t do_call(void *context) override;
 
 		private:
 			std::function<void (Arguments_t...)> _callable;
@@ -76,11 +76,11 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(std::function<hretval_t (Arguments_t...)> callable);
+		std::shared_ptr<super_handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> callable);
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(hretval_t (*function_pointer)(Arguments_t...));
+		std::shared_ptr<super_handler> new_shared_handler(ctlcode_t (*function_pointer)(Arguments_t...));
 
 
 		template <typename ...Arguments_t>
@@ -96,14 +96,14 @@ namespace sam
 		// Definitions
 
 		template <typename ...Arguments_t>
-		handler<hretval_t (Arguments_t...)>::handler(std::function<hretval_t (Arguments_t...)> callable)
+		handler<ctlcode_t (Arguments_t...)>::handler(std::function<ctlcode_t (Arguments_t...)> callable)
 			: super_handler(new_signature<Arguments_t...>()), _callable(callable)
 		{
 		}
 
 
 		template <typename ...Arguments_t>
-		hretval_t handler<hretval_t (Arguments_t...)>::do_call(void *context)
+		ctlcode_t handler<ctlcode_t (Arguments_t...)>::do_call(void *context)
 		{
 			auto arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
 			return apply(_callable, arguments);
@@ -119,7 +119,7 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		hretval_t handler<void (Arguments_t...)>::do_call(void *context)
+		ctlcode_t handler<void (Arguments_t...)>::do_call(void *context)
 		{
 			auto arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
 			apply(_callable, arguments);
@@ -129,16 +129,16 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(std::function<hretval_t (Arguments_t...)> callable)
+		std::shared_ptr<super_handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> callable)
 		{
-			return std::shared_ptr<super_handler>(new handler<hretval_t (Arguments_t...)>(callable));
+			return std::shared_ptr<super_handler>(new handler<ctlcode_t (Arguments_t...)>(callable));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(hretval_t (*function_pointer)(Arguments_t...))
+		std::shared_ptr<super_handler> new_shared_handler(ctlcode_t (*function_pointer)(Arguments_t...))
 		{
-			return new_shared_handler(std::function<hretval_t (Arguments_t...)>(function_pointer));
+			return new_shared_handler(std::function<ctlcode_t (Arguments_t...)>(function_pointer));
 		}
 
 

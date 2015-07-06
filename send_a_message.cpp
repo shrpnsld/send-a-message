@@ -52,9 +52,9 @@ namespace sam
 		}
 
 
-		hretval_t default_hretval_handle(hretval_t hretval)
+		ctlcode_t default_control_code_handler(ctlcode_t control_codee)
 		{
-			return hretval;
+			return control_codee;
 		}
 
 	}
