@@ -1,16 +1,16 @@
 #pragma once
 
-#include <typeindex>
 #include <thread>
 #include <unordered_map>
 #include <utility>
 #include <memory>
-#include <cassert>
 
-#include "queue.h"
+#include "thread_safe_queue.h"
 #include "message.h"
 #include "handler.h"
 #include "signature.h"
+#include "message_queue.h"
+#include "stuff.h"
 
 
 namespace sam
@@ -26,22 +26,19 @@ namespace sam
 	void receive(Callables_t ...callables);
 
 
-
 	namespace details
 	{
-
-		std::shared_ptr<queue<message>> &message_queue_for_thread(std::thread::id id);
-		void remove_message_queue_for_thread(std::thread::id id);
 
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
 
-		int register_handler(std::unordered_map<std::type_index, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler);
+		int register_handler(std::unordered_map<signature_t, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler);
 
 		template <typename ...Callables_t>
-		std::unordered_map<std::type_index, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables);
+		std::unordered_map<signature_t, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables);
 
 		ctlcode_t default_control_code_handler(ctlcode_t control_code);
+		ctlcode_t dispatch_message(const std::unordered_map<signature_t, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<message> message_ptr);
 
 	}
 
@@ -53,39 +50,26 @@ namespace sam
 	void send(std::thread &thread, Arguments_t &&...arguments)
 	{
 		std::shared_ptr<details::message> message_ptr(details::new_shared_message(std::forward<Arguments_t>(arguments)...));
-		auto message_queue = details::message_queue_for_thread(thread.get_id());
-		message_queue->push(message_ptr);
+		details::push_message_for_thread(thread.get_id(), message_ptr);
 	}
 
 
 	template <typename ...Callables_t>
 	void receive(Callables_t ...callables)
 	{
-		auto handlers = details::register_handlers(callables...);
-		if (handlers.find(details::new_signature<ctlcode_t>()) == handlers.end())
-		{
-			register_handler(handlers, details::new_shared_handler(details::default_control_code_handler));
-		}
+		details::call_finally caller(std::bind(details::remove_message_queue_for_thread, std::this_thread::get_id()));
 
-		auto message_queue = details::message_queue_for_thread(std::this_thread::get_id());
+		auto handlers = details::register_handlers(callables...);
 		for (;;)
 		{
-			std::shared_ptr<details::message> message = message_queue->wait_and_pop();
-
-			auto iterator = handlers.find(message->signature());
-			assert(iterator != handlers.end());
-
-			std::shared_ptr<details::super_handler> handler = iterator->second;
-			ctlcode_t control_code = handler->do_call(message->data());
+			std::shared_ptr<details::message> message_ptr = details::pop_message_for_this_thread();
+			ctlcode_t control_code = details::dispatch_message(handlers, message_ptr);
 			if (control_code == STOP)
 			{
 				break;
 			}
 		}
-
-		details::remove_message_queue_for_thread(std::this_thread::get_id());
 	}
-
 
 
 	namespace details
@@ -98,10 +82,16 @@ namespace sam
 
 
 		template <typename ...Callables_t>
-		std::unordered_map<std::type_index, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables)
+		std::unordered_map<signature_t, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables)
 		{
-			std::unordered_map<std::type_index, std::shared_ptr<super_handler>> handlers;
+			std::unordered_map<signature_t, std::shared_ptr<super_handler>> handlers;
 			unpack(register_handler(handlers, new_shared_handler(callables))...);
+
+			signature_t ctlcode_handler_signature = new_signature<ctlcode_t>();
+			if (handlers.find(ctlcode_handler_signature) == handlers.end())
+			{
+				register_handler(handlers, new_shared_handler(default_control_code_handler));
+			}
 
 			return handlers;
 		}

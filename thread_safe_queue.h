@@ -57,7 +57,8 @@ namespace sam
 
 
 		template <typename Type_t>
-		queue<Type_t>::queue(queue &&)
+		queue<Type_t>::queue(queue &&another)
+			: _head(std::move(another._head)), _tail(another._tail)
 		{
 		}
 
