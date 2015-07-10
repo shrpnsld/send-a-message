@@ -12,7 +12,7 @@ namespace sam
 	namespace details
 	{
 
-		queue<message> &message_queue_for_thread(std::thread::id id);
+		void create_message_queue_for_thread(std::thread::id id);
 		void remove_message_queue_for_thread(std::thread::id id);
 
 		void push_message_for_thread(std::thread::id id, std::shared_ptr<message> message_ptr);

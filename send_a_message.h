@@ -20,6 +20,12 @@ namespace sam
 	// Declarations
 
 	template <typename ...Arguments_t>
+	std::function<void (Arguments_t...)> make_receivable(std::function<void (Arguments_t...)> std_function);
+
+	template <typename ...Arguments_t>
+	std::function<void (Arguments_t...)> make_receivable(void (*function_pointer)(Arguments_t...));
+
+	template <typename ...Arguments_t>
 	void send(std::thread &thread, Arguments_t &&...arguments);
 
 	template <typename ...Callables_t>
@@ -47,6 +53,29 @@ namespace sam
 	// Definitions
 
 	template <typename ...Arguments_t>
+	std::function<void (Arguments_t...)> make_receivable(std::function<void (Arguments_t...)> std_function)
+	{
+		auto receivable_function = [std_function](Arguments_t &&...arguments)
+		{
+			details::create_message_queue_for_thread(std::this_thread::get_id());
+
+			std_function(std::forward<Arguments_t>(arguments)...);
+
+			details::remove_message_queue_for_thread(std::this_thread::get_id());
+		};
+
+		return receivable_function;
+	}
+
+
+	template <typename ...Arguments_t>
+	std::function<void (Arguments_t...)> make_receivable(void (*function_pointer)(Arguments_t...))
+	{
+		return make_receivable<Arguments_t...>(std::function<void (Arguments_t...)>(function_pointer));
+	}
+
+
+	template <typename ...Arguments_t>
 	void send(std::thread &thread, Arguments_t &&...arguments)
 	{
 		std::shared_ptr<details::message> message_ptr(details::new_shared_message(std::forward<Arguments_t>(arguments)...));
@@ -57,8 +86,6 @@ namespace sam
 	template <typename ...Callables_t>
 	void receive(Callables_t ...callables)
 	{
-		details::call_finally caller(std::bind(details::remove_message_queue_for_thread, std::this_thread::get_id()));
-
 		auto handlers = details::register_handlers(callables...);
 		for (;;)
 		{
