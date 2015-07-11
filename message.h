@@ -15,41 +15,33 @@ namespace sam
 		//
 		// Declarations
 
-		class super_fields
+		class message
 		{
 		public:
-			virtual ~super_fields() = 0;
+			message(signature_t signature);
+			virtual ~message() = 0;
 
-			virtual void *void_ptr() = 0;
+			const signature_t signature() const;
+
+			virtual void *data() = 0;
+
+		private:
+			signature_t _signature;
 		};
 
 
 		template <typename ...Types_t>
-		class fields
-			: public super_fields
+		class concrete_message
+			: public message
 		{
 		public:
 			template <typename ...DataTypes_t>
-			fields(DataTypes_t &&...arguments);
+			concrete_message(DataTypes_t &&...arguments);
 
-			virtual void *void_ptr() override;
-
-		private:
-			std::tuple<typename std::remove_reference<Types_t>::type...> _data;
-		};
-
-
-		class message
-		{
-		public:
-			message(signature_t signature, std::shared_ptr<super_fields> data);
-
-			const signature_t &signature() const;
-			void *data();
+			virtual void *data() override;
 
 		private:
-			signature_t _signature;
-			std::shared_ptr<super_fields> _data;
+			std::tuple<Types_t...> _data;
 		};
 
 
@@ -57,20 +49,19 @@ namespace sam
 		std::shared_ptr<message> new_shared_message(Types_t &&...arguments);
 
 
-
 		//
 		// Definitions
 
 		template <typename ...Types_t>
 		template <typename ...DataTypes_t>
-		fields<Types_t...>::fields(DataTypes_t &&...arguments)
-			: _data(std::forward<DataTypes_t>(arguments)...)
+		concrete_message<Types_t...>::concrete_message(DataTypes_t &&...arguments)
+			: message(new_signature<Types_t...>()), _data(std::forward<DataTypes_t>(arguments)...)
 		{
 		}
 
 
 		template <typename ...Types_t>
-		void *fields<Types_t...>::void_ptr()
+		void *concrete_message<Types_t...>::data()
 		{
 			return reinterpret_cast<void *>(&_data);
 		}
@@ -79,9 +70,7 @@ namespace sam
 		template <typename ...Types_t>
 		std::shared_ptr<message> new_shared_message(Types_t &&...arguments)
 		{
-			signature_t signature = new_signature<Types_t...>();
-			std::shared_ptr<super_fields> data{new fields<Types_t...>(std::forward<Types_t>(arguments)...)};
-			return std::shared_ptr<message>(new message(signature, data));
+			return std::shared_ptr<message>(new concrete_message<typename std::remove_reference<Types_t>::type...>(std::forward<Types_t>(arguments)...));
 		}
 
 	}

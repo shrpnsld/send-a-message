@@ -10,26 +10,20 @@ namespace sam
 		//
 		// Definitions
 
-		super_fields::~super_fields()
+		message::message(signature_t signature)
+			: _signature(signature)
 		{
 		}
 
 
-		message::message(std::type_index signature, std::shared_ptr<super_fields> data)
-			: _signature(signature), _data(data)
+		message::~message()
 		{
 		}
 
 
-		const std::type_index &message::signature() const
+		const signature_t message::signature() const
 		{
 			return _signature;
-		}
-
-
-		void *message::data()
-		{
-			return _data->void_ptr();
 		}
 
 	}
