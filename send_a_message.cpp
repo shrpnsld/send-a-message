@@ -8,11 +8,17 @@
 namespace sam
 {
 
+	//
+	// Definitions
+
+	mailbox::mailbox(const std::thread &thread)
+		: _message_queue(details::message_queue_for_thread(thread.get_id()))
+	{
+	}
+
+
 	namespace details
 	{
-
-		//
-		// Definitions
 
 		int register_handler(std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<handler> handler)
 		{

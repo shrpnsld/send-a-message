@@ -31,6 +31,15 @@ namespace sam
 		}
 
 
+		queue<message> &message_queue_for_thread(std::thread::id id)
+		{
+			auto iterator = _message_queues.find(id);
+			assert(iterator != _message_queues.end());
+
+			return iterator->second;
+		}
+
+
 		void push_message_for_thread(std::thread::id id, std::shared_ptr<message> message_ptr)
 		{
 			auto &message_queue = _message_queues[id];
