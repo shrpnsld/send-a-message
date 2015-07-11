@@ -10,7 +10,6 @@
 #include "handler.h"
 #include "signature.h"
 #include "message_queue.h"
-#include "stuff.h"
 
 
 namespace sam
