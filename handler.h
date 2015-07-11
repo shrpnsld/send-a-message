@@ -27,11 +27,11 @@ namespace sam
 		//
 		// Declarations
 
-		class super_handler
+		class handler
 		{
 		public:
-			super_handler(const signature_t &signature);
-			virtual ~super_handler() = 0;
+			handler(const signature_t &signature);
+			virtual ~handler() = 0;
 
 			const signature_t &signature() const;
 
@@ -44,15 +44,15 @@ namespace sam
 
 
 		template <typename>
-		class handler;
+		class concrete_handler;
 
 
 		template <typename ...Arguments_t>
-		class handler<ctlcode_t (Arguments_t...)>
-			: public super_handler
+		class concrete_handler<ctlcode_t (Arguments_t...)>
+			: public handler
 		{
 		public:
-			handler(std::function<ctlcode_t (Arguments_t...)> callable);
+			concrete_handler(std::function<ctlcode_t (Arguments_t...)> callable);
 
 			virtual ctlcode_t do_call(void *context) override;
 
@@ -62,11 +62,11 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		class handler<void (Arguments_t...)>
-			: public super_handler
+		class concrete_handler<void (Arguments_t...)>
+			: public handler
 		{
 		public:
-			handler(std::function<void (Arguments_t...)> callable);
+			concrete_handler(std::function<void (Arguments_t...)> callable);
 
 			virtual ctlcode_t do_call(void *context) override;
 
@@ -76,19 +76,19 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> callable);
+		std::shared_ptr<handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> callable);
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(ctlcode_t (*function_pointer)(Arguments_t...));
+		std::shared_ptr<handler> new_shared_handler(ctlcode_t (*function_pointer)(Arguments_t...));
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(std::function<void (Arguments_t...)> callable);
+		std::shared_ptr<handler> new_shared_handler(std::function<void (Arguments_t...)> callable);
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(void (*function_pointer)(Arguments_t...));
+		std::shared_ptr<handler> new_shared_handler(void (*function_pointer)(Arguments_t...));
 
 
 
@@ -96,14 +96,14 @@ namespace sam
 		// Definitions
 
 		template <typename ...Arguments_t>
-		handler<ctlcode_t (Arguments_t...)>::handler(std::function<ctlcode_t (Arguments_t...)> callable)
-			: super_handler(new_signature<Arguments_t...>()), _callable(callable)
+		concrete_handler<ctlcode_t (Arguments_t...)>::concrete_handler(std::function<ctlcode_t (Arguments_t...)> callable)
+			: handler(new_signature<Arguments_t...>()), _callable(callable)
 		{
 		}
 
 
 		template <typename ...Arguments_t>
-		ctlcode_t handler<ctlcode_t (Arguments_t...)>::do_call(void *context)
+		ctlcode_t concrete_handler<ctlcode_t (Arguments_t...)>::do_call(void *context)
 		{
 			auto arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
 			return apply(_callable, arguments);
@@ -112,14 +112,14 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		handler<void (Arguments_t...)>::handler(std::function<void (Arguments_t...)> callable)
-			: super_handler(new_signature<Arguments_t...>()), _callable(callable)
+		concrete_handler<void (Arguments_t...)>::concrete_handler(std::function<void (Arguments_t...)> callable)
+			: handler(new_signature<Arguments_t...>()), _callable(callable)
 		{
 		}
 
 
 		template <typename ...Arguments_t>
-		ctlcode_t handler<void (Arguments_t...)>::do_call(void *context)
+		ctlcode_t concrete_handler<void (Arguments_t...)>::do_call(void *context)
 		{
 			auto arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
 			apply(_callable, arguments);
@@ -129,28 +129,28 @@ namespace sam
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> callable)
+		std::shared_ptr<handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> callable)
 		{
-			return std::shared_ptr<super_handler>(new handler<ctlcode_t (Arguments_t...)>(callable));
+			return std::shared_ptr<handler>(new concrete_handler<ctlcode_t (Arguments_t...)>(callable));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(ctlcode_t (*function_pointer)(Arguments_t...))
+		std::shared_ptr<handler> new_shared_handler(ctlcode_t (*function_pointer)(Arguments_t...))
 		{
 			return new_shared_handler(std::function<ctlcode_t (Arguments_t...)>(function_pointer));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(std::function<void (Arguments_t...)> callable)
+		std::shared_ptr<handler> new_shared_handler(std::function<void (Arguments_t...)> callable)
 		{
-			return std::shared_ptr<super_handler>(new handler<void (Arguments_t...)>(callable));
+			return std::shared_ptr<handler>(new concrete_handler<void (Arguments_t...)>(callable));
 		}
 
 
 		template <typename ...Arguments_t>
-		std::shared_ptr<super_handler> new_shared_handler(void (*function_pointer)(Arguments_t...))
+		std::shared_ptr<handler> new_shared_handler(void (*function_pointer)(Arguments_t...))
 		{
 			return new_shared_handler(std::function<void (Arguments_t...)>(function_pointer));
 		}

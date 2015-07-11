@@ -38,13 +38,13 @@ namespace sam
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
 
-		int register_handler(std::unordered_map<signature_t, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<super_handler> handler);
+		int register_handler(std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<handler> handler);
 
 		template <typename ...Callables_t>
-		std::unordered_map<signature_t, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables);
+		std::unordered_map<signature_t, std::shared_ptr<handler>> register_handlers(Callables_t ...callables);
 
 		ctlcode_t default_control_code_handler(ctlcode_t control_code);
-		ctlcode_t dispatch_message(const std::unordered_map<signature_t, std::shared_ptr<super_handler>> &handlers, std::shared_ptr<message> message_ptr);
+		ctlcode_t dispatch_message(const std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<message> message_ptr);
 
 	}
 
@@ -109,9 +109,9 @@ namespace sam
 
 
 		template <typename ...Callables_t>
-		std::unordered_map<signature_t, std::shared_ptr<super_handler>> register_handlers(Callables_t ...callables)
+		std::unordered_map<signature_t, std::shared_ptr<handler>> register_handlers(Callables_t ...callables)
 		{
-			std::unordered_map<signature_t, std::shared_ptr<super_handler>> handlers;
+			std::unordered_map<signature_t, std::shared_ptr<handler>> handlers;
 			unpack(register_handler(handlers, new_shared_handler(callables))...);
 
 			signature_t ctlcode_handler_signature = new_signature<ctlcode_t>();
