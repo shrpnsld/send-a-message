@@ -20,10 +20,10 @@ namespace sam
 	// Declarations
 
 	template <typename Function_t, typename ...Arguments_t>
-	std::thread receivable_thread(Function_t function, Arguments_t &&...arguments);
+	std::thread receivable_thread(Function_t &&function, Arguments_t &&...arguments);
 
 	template <typename ...Functions_t>
-	void receive(Functions_t ...functions);
+	void receive(Functions_t &&...functions);
 
 
 	class mailbox
@@ -51,7 +51,7 @@ namespace sam
 		int register_handler(std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<handler> handler);
 
 		template <typename ...Functions_t>
-		std::unordered_map<signature_t, std::shared_ptr<handler>> register_handlers(Functions_t ...functions);
+		std::unordered_map<signature_t, std::shared_ptr<handler>> register_handlers(Functions_t &&...functions);
 
 		ctlcode_t default_control_code_handler(ctlcode_t control_code);
 		ctlcode_t dispatch_message(const std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<message> message_ptr);
@@ -63,10 +63,10 @@ namespace sam
 	// Definitions
 
 	template <typename Function_t, typename ...Arguments_t>
-	std::thread receivable_thread(Function_t function, Arguments_t &&...arguments)
+	std::thread receivable_thread(Function_t &&function, Arguments_t &&...arguments)
 	{
-		auto receivable_thread_function_instance = details::receivable_thread_function<Function_t, typename std::decay<Arguments_t>::type...>;
-		std::thread thread(receivable_thread_function_instance, function, std::forward<Arguments_t>(arguments)...);
+		auto receivable_thread_function_instance = details::receivable_thread_function<typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...>;
+		std::thread thread(receivable_thread_function_instance, std::forward<Function_t>(function), std::forward<Arguments_t>(arguments)...);
 		details::create_message_queue_for_thread(thread.get_id());
 
 		return thread;
@@ -74,9 +74,9 @@ namespace sam
 
 
 	template <typename ...Functions_t>
-	void receive(Functions_t ...functions)
+	void receive(Functions_t &&...functions)
 	{
-		auto handlers = details::register_handlers(functions...);
+		auto handlers = details::register_handlers(std::forward<Functions_t>(functions)...);
 		for (;;)
 		{
 			std::shared_ptr<details::message> message_ptr = details::pop_message_for_this_thread();
@@ -115,10 +115,10 @@ namespace sam
 
 
 		template <typename ...Functions_t>
-		std::unordered_map<signature_t, std::shared_ptr<handler>> register_handlers(Functions_t ...functions)
+		std::unordered_map<signature_t, std::shared_ptr<handler>> register_handlers(Functions_t &&...functions)
 		{
 			std::unordered_map<signature_t, std::shared_ptr<handler>> handlers;
-			unpack(register_handler(handlers, new_shared_handler(functions))...);
+			unpack(register_handler(handlers, new_shared_handler(std::forward<Functions_t>(functions)))...);
 
 			signature_t ctlcode_handler_signature = new_signature<ctlcode_t>();
 			if (handlers.find(ctlcode_handler_signature) == handlers.end())
