@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <utility>
 #include <memory>
+#include <type_traits>
 
 #include "thread_safe_queue.h"
 #include "message.h"
@@ -41,6 +42,9 @@ namespace sam
 	namespace details
 	{
 
+		template <typename Function_t, typename ...Arguments_t>
+		void receivable_thread_function(Function_t function, Arguments_t ...arguments);
+
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
 
@@ -61,13 +65,8 @@ namespace sam
 	template <typename Function_t, typename ...Arguments_t>
 	std::thread receivable_thread(Function_t function, Arguments_t &&...arguments)
 	{
-		auto thread_function = [function](Arguments_t &&...arguments)
-		{
-			function(std::forward<Arguments_t>(arguments)...);
-			details::remove_message_queue_for_thread(std::this_thread::get_id());
-		};
-
-		std::thread thread(thread_function, std::forward<Arguments_t>(arguments)...);
+		auto receivable_thread_function_instance = details::receivable_thread_function<Function_t, typename std::decay<Arguments_t>::type...>;
+		std::thread thread(receivable_thread_function_instance, function, std::forward<Arguments_t>(arguments)...);
 		details::create_message_queue_for_thread(thread.get_id());
 
 		return thread;
@@ -100,6 +99,14 @@ namespace sam
 
 	namespace details
 	{
+
+		template <typename Function_t, typename ...Arguments_t>
+		void receivable_thread_function(Function_t function, Arguments_t ...arguments)
+		{
+			function(std::move(arguments)...);
+			details::remove_message_queue_for_thread(std::this_thread::get_id());
+		}
+
 
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...)
