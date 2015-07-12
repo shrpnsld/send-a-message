@@ -12,7 +12,7 @@ This is a library for inter-thread message passing.
 
 Thread should be started using `sam::receivable_thread` function. It is similar to `std::thread` constructor.
 
-`sam::receive` function runs message receiving loop. It accepts functions as handlers. These functions can be any callables. They can be `void` or can return any of the following `sam::ctlcode_t` values:
+`sam::receive` function runs message receiving loop. It accepts function pointers and `std::function` as handlers. They can be `void` or can return any of the following `sam::ctlcode_t` values:
 * `sam::CONTINUE` - continue running message receiving loop (same as `void` function)
 * `sam::STOP` - stop running message receiving loop
 
@@ -62,14 +62,14 @@ void receiver()
 
 ```C++
 // start std::thread and asociate message queue with it
-std::thread thread = sam::receivable_thread(receiver);
+std::thread thread{sam::receivable_thread(receiver)};
 
 // get mailbox for the thread
-sam::mailbox mailbox(thread);
+sam::mailbox mailbox{thread};
 
 // send messages
 mailbox.send(42, 3.14159f);
-mailbox.send(static_cast<const char *>("hellomoto!")); // 'const char []' to 'const char *'
+mailbox.send("hellomoto!");
 ```
 
 Output:
