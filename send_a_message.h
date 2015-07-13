@@ -46,7 +46,10 @@ namespace sam
 
 
 		template <typename Function_t, typename ...Arguments_t>
-		void receivable_thread_function(Function_t function, Arguments_t ...arguments);
+		void receivable_function_template(Function_t function, Arguments_t ...arguments);
+
+		template <typename Function_t, typename ...Arguments_t>
+		void (*make_receivable_function())(typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...);
 
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
@@ -68,8 +71,8 @@ namespace sam
 	template <typename Function_t, typename ...Arguments_t>
 	std::thread receivable_thread(Function_t &&function, Arguments_t &&...arguments)
 	{
-		auto receivable_thread_function_instance = details::receivable_thread_function<typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...>;
-		std::thread thread{receivable_thread_function_instance, std::forward<Function_t>(function), std::forward<Arguments_t>(arguments)...};
+		auto receivable_function = details::make_receivable_function<Function_t, Arguments_t...>();
+		std::thread thread{receivable_function, std::forward<Function_t>(function), std::forward<Arguments_t>(arguments)...};
 		details::create_message_queue_for_thread(thread.get_id());
 
 		return thread;
@@ -105,10 +108,17 @@ namespace sam
 	{
 
 		template <typename Function_t, typename ...Arguments_t>
-		void receivable_thread_function(Function_t function, Arguments_t ...arguments)
+		void receivable_function_template(Function_t function, Arguments_t ...arguments)
 		{
 			function(std::move(arguments)...);
 			details::remove_message_queue_for_thread(std::this_thread::get_id());
+		}
+
+
+		template <typename Function_t, typename ...Arguments_t>
+		void (*make_receivable_function())(typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...)
+		{
+			return details::receivable_function_template<typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...>;
 		}
 
 
