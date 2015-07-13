@@ -39,21 +39,6 @@ namespace sam
 			return iterator->second;
 		}
 
-
-		void push_message_for_thread(std::thread::id id, std::shared_ptr<message> message_ptr)
-		{
-			auto &message_queue = _message_queues[id];
-			message_queue.push(message_ptr);
-
-		}
-
-
-		std::shared_ptr<message> pop_message_for_this_thread()
-		{
-			auto &message_queue = _message_queues[std::this_thread::get_id()];
-			return message_queue.wait_and_pop();
-		}
-
 	}
 
 }

@@ -77,9 +77,10 @@ namespace sam
 	void receive(Functions_t &&...functions)
 	{
 		auto handlers = details::register_handlers(std::forward<Functions_t>(functions)...);
+		auto &message_queue = details::message_queue_for_thread(std::this_thread::get_id());
 		for (;;)
 		{
-			std::shared_ptr<details::message> message_ptr = details::pop_message_for_this_thread();
+			std::shared_ptr<details::message> message_ptr = message_queue.wait_and_pop();
 			ctlcode_t control_code = details::dispatch_message(handlers, message_ptr);
 			if (control_code == STOP)
 			{
