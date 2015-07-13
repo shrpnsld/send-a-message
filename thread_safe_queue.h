@@ -50,15 +50,17 @@ namespace sam
 		// Definitions
 
 		template <typename Type_t>
-		queue<Type_t>::queue()
-			: _head(new node_t), _tail(_head.get())
+		queue<Type_t>::queue() :
+			_head{new node_t},
+			_tail{_head.get()}
 		{
 		}
 
 
 		template <typename Type_t>
-		queue<Type_t>::queue(queue &&another)
-			: _head(std::move(another._head)), _tail(another._tail)
+		queue<Type_t>::queue(queue &&another) :
+			_head{std::move(another._head)},
+			_tail{another._tail}
 		{
 		}
 

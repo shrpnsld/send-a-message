@@ -10,8 +10,8 @@ namespace sam
 		//
 		// Definitions
 
-		handler::handler(const std::type_index &signature)
-			: _signature(signature)
+		handler::handler(const std::type_index &signature) :
+			_signature{signature}
 		{
 		}
 

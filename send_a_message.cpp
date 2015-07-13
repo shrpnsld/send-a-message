@@ -11,8 +11,8 @@ namespace sam
 	//
 	// Definitions
 
-	mailbox::mailbox(const std::thread &thread)
-		: _message_queue(details::message_queue_for_thread(thread.get_id()))
+	mailbox::mailbox(const std::thread &thread) :
+		_message_queue{details::message_queue_for_thread(thread.get_id())}
 	{
 	}
 
@@ -20,7 +20,7 @@ namespace sam
 	namespace details
 	{
 
-		int register_handler(std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<handler> handler)
+		int register_handler(handlers_t &handlers, std::shared_ptr<handler> handler)
 		{
 			handlers.insert(std::make_pair(handler->signature(), handler));
 			return 0;
@@ -33,12 +33,12 @@ namespace sam
 		}
 
 
-		ctlcode_t dispatch_message(const std::unordered_map<signature_t, std::shared_ptr<handler>> &handlers, std::shared_ptr<message> message_ptr)
+		ctlcode_t dispatch_message(const handlers_t &handlers, std::shared_ptr<message> message_ptr)
 		{
 			auto iterator = handlers.find(message_ptr->signature());
 			assert(iterator != handlers.end()); // if fails - handler for message signature not found
 
-			std::shared_ptr<handler> handler_ptr = iterator->second;
+			std::shared_ptr<handler> handler_ptr{iterator->second};
 			return handler_ptr->do_call(message_ptr->data());
 		}
 

@@ -10,8 +10,8 @@ namespace sam
 		//
 		// Definitions
 
-		message::message(signature_t signature)
-			: _signature(signature)
+		message::message(signature_t signature) :
+			_signature{signature}
 		{
 		}
 

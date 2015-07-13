@@ -54,8 +54,9 @@ namespace sam
 
 		template <typename ...Types_t>
 		template <typename ...DataTypes_t>
-		concrete_message<Types_t...>::concrete_message(DataTypes_t &&...arguments)
-			: message(new_signature<Types_t...>()), _data(std::forward<DataTypes_t>(arguments)...)
+		concrete_message<Types_t...>::concrete_message(DataTypes_t &&...arguments) :
+			message{new_signature<Types_t...>()},
+			_data{std::forward<DataTypes_t>(arguments)...}
 		{
 		}
 
@@ -70,7 +71,7 @@ namespace sam
 		template <typename ...Types_t>
 		std::shared_ptr<message> new_shared_message(Types_t &&...arguments)
 		{
-			return std::shared_ptr<message>(new concrete_message<typename std::remove_reference<Types_t>::type...>(std::forward<Types_t>(arguments)...));
+			return std::shared_ptr<message>{new concrete_message<typename std::remove_reference<Types_t>::type...>(std::forward<Types_t>(arguments)...)};
 		}
 
 	}

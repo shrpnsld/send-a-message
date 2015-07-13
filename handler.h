@@ -96,8 +96,9 @@ namespace sam
 		// Definitions
 
 		template <typename ...Arguments_t>
-		concrete_handler<ctlcode_t (Arguments_t...)>::concrete_handler(std::function<ctlcode_t (Arguments_t...)> function)
-			: handler(new_signature<Arguments_t...>()), _function(function)
+		concrete_handler<ctlcode_t (Arguments_t...)>::concrete_handler(std::function<ctlcode_t (Arguments_t...)> function) :
+			handler{new_signature<Arguments_t...>()},
+			_function{function}
 		{
 		}
 
@@ -105,15 +106,16 @@ namespace sam
 		template <typename ...Arguments_t>
 		ctlcode_t concrete_handler<ctlcode_t (Arguments_t...)>::do_call(void *context)
 		{
-			auto arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
+			std::tuple<Arguments_t...> arguments{*reinterpret_cast<std::tuple<Arguments_t...> *>(context)};
 			return apply(_function, arguments);
 		}
 
 
 
 		template <typename ...Arguments_t>
-		concrete_handler<void (Arguments_t...)>::concrete_handler(std::function<void (Arguments_t...)> function)
-			: handler(new_signature<Arguments_t...>()), _function(function)
+		concrete_handler<void (Arguments_t...)>::concrete_handler(std::function<void (Arguments_t...)> function) :
+			handler{new_signature<Arguments_t...>()},
+			_function{function}
 		{
 		}
 
@@ -121,7 +123,7 @@ namespace sam
 		template <typename ...Arguments_t>
 		ctlcode_t concrete_handler<void (Arguments_t...)>::do_call(void *context)
 		{
-			auto arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
+			std::tuple<Arguments_t...> arguments{*reinterpret_cast<std::tuple<Arguments_t...> *>(context)};
 			apply(_function, arguments);
 			return CONTINUE;
 		}
@@ -131,7 +133,7 @@ namespace sam
 		template <typename ...Arguments_t>
 		std::shared_ptr<handler> new_shared_handler(std::function<ctlcode_t (Arguments_t...)> function)
 		{
-			return std::shared_ptr<handler>(new concrete_handler<ctlcode_t (Arguments_t...)>(function));
+			return std::shared_ptr<handler>{new concrete_handler<ctlcode_t (Arguments_t...)>(function)};
 		}
 
 
@@ -145,7 +147,7 @@ namespace sam
 		template <typename ...Arguments_t>
 		std::shared_ptr<handler> new_shared_handler(std::function<void (Arguments_t...)> function)
 		{
-			return std::shared_ptr<handler>(new concrete_handler<void (Arguments_t...)>(function));
+			return std::shared_ptr<handler>{new concrete_handler<void (Arguments_t...)>(function)};
 		}
 
 
