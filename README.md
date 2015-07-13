@@ -1,6 +1,6 @@
 # send-a-message
 
-This is a library for inter-thread message passing.
+Library for inter-thread message passing.
 
 - [Usage](#usage)
 - [Example](#example)
@@ -27,7 +27,7 @@ std::thread sam::receivable_thread(Function_t function, Arguments_t &&...argumen
 
 ```C++
 template <Functions_t ...functions>
-void sam::receive(Functions_t ...functions);
+void sam::receive(Functions_t &&...functions);
 ```
 
 ```C++
@@ -44,6 +44,10 @@ sam::mailbox::send(Arguments_t &&...arguments);
 # Example
 
 Code:
+```C++
+#include "send_a_message.h"
+```
+
 ```C++
 // handlers (with code that prints function signature)
 void handler_int_float(int i, float f);
@@ -86,7 +90,7 @@ void handle_cstring(const char *)
 
 * `sam::mailbox` object is a wrapper for a reference to a message queue.
 
-* Arguments of `sam::mailbox::send` member-function are forwarded to a message data storage.
+* Arguments of `sam::mailbox::send` member-function are forwarded to internal storage and they are copied/moved only once.
 
 * Matching message to a handler is done by matching argument types ignoring reference specifiers. The matching is actually a search in a hash table.
 
