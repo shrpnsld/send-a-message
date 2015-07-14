@@ -102,7 +102,7 @@ namespace sam
 	template <typename ...Arguments_t>
 	void mailbox::send(Arguments_t &&...arguments)
 	{
-		std::shared_ptr<details::message> message_ptr{details::new_shared_message(std::forward<typename std::decay<Arguments_t>::type>(arguments)...)};
+		std::shared_ptr<details::message> message_ptr{details::new_shared_message(std::forward<Arguments_t>(arguments)...)};
 		_message_queue.push(message_ptr);
 	}
 

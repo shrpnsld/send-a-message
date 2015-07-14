@@ -71,7 +71,7 @@ namespace sam
 		template <typename ...Types_t>
 		std::shared_ptr<message> new_shared_message(Types_t &&...arguments)
 		{
-			return std::shared_ptr<message>{new concrete_message<typename std::remove_reference<Types_t>::type...>(std::forward<Types_t>(arguments)...)};
+			return std::shared_ptr<message>{new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...)};
 		}
 
 	}

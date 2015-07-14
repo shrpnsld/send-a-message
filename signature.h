@@ -32,7 +32,7 @@ namespace sam
 		template <typename ...Types_t>
 		signature_t new_signature()
 		{
-			return signature_t(typeid(pack_t<typename std::remove_reference<Types_t>::type...>));
+			return signature_t(typeid(pack_t<typename std::decay<Types_t>::type...>));
 		}
 
 	}
