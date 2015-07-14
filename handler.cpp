@@ -10,7 +10,7 @@ namespace sam
 		//
 		// Definitions
 
-		handler::handler(const std::type_index &signature) :
+		handler::handler(const signature_t &signature) :
 			_signature{signature}
 		{
 		}
@@ -21,7 +21,7 @@ namespace sam
 		}
 
 
-		const std::type_index &handler::signature() const
+		const signature_t &handler::signature() const
 		{
 			return _signature;
 		}
