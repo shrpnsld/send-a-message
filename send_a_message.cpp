@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #include <map>
 #include <mutex>
 #include <cassert>
@@ -9,6 +14,11 @@ namespace sam
 {
 
 	//
+	// Public
+	//
+
+
+	//
 	// Definitions
 
 	mailbox::mailbox(const std::thread &thread) :
@@ -16,6 +26,15 @@ namespace sam
 	{
 	}
 
+
+
+	//
+	// Private
+	//
+
+
+	//
+	// Definitions
 
 	namespace details
 	{

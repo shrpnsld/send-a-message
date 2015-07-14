@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #pragma once
 
 #include <utility>
@@ -9,11 +14,16 @@
 namespace sam
 {
 
+	//
+	// Private
+	//
+
+
+	//
+	// Declarations
+
 	namespace details
 	{
-
-		//
-		// Declarations
 
 		class message
 		{
@@ -48,9 +58,14 @@ namespace sam
 		template <typename ...Types_t>
 		std::shared_ptr<message> new_shared_message(Types_t &&...arguments);
 
+	}
 
-		//
-		// Definitions
+
+	//
+	// Definitions
+
+	namespace details
+	{
 
 		template <typename ...Types_t>
 		template <typename ...DataTypes_t>

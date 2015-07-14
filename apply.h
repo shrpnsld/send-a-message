@@ -1,14 +1,24 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #pragma once
 
 
 namespace sam
 {
 
+	//
+	// Private
+	//
+
+
+	//
+	// Declarations
+
 	namespace details
 	{
-
-		//
-		// Declarations
 
 		template <std::size_t ...>
 		struct sequence
@@ -47,9 +57,14 @@ namespace sam
 		template <typename Return_t, typename ...Arguments_t>
 		Return_t apply(const std::function<Return_t (Arguments_t...)> &function, const std::tuple<Arguments_t...> &arguments);
 
+	}
 
-		//
-		// Definitions
+
+	//
+	// Definitions
+
+	namespace details
+	{
 
 		template <typename Return_t, typename ...Arguments_t, size_t ...Indices>
 		Return_t apply_impl(const std::function<Return_t (Arguments_t...)> &function, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>)

@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #pragma once
 
 #include <memory>
@@ -10,11 +15,16 @@
 namespace sam
 {
 
+	//
+	// Private
+	//
+
+
+	//
+	// Declarations
+
 	namespace details
 	{
-
-		//
-		// Declarations
 
 		template <typename Type_t>
 		class queue
@@ -44,9 +54,14 @@ namespace sam
 			std::condition_variable _is_empty;
 		};
 
+	}
 
-		//
-		// Definitions
+
+	//
+	// Definitions
+
+	namespace details
+	{
 
 		template <typename Type_t>
 		queue<Type_t>::queue() :

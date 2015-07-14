@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #include <map>
 #include <thread>
 #include <mutex>
@@ -7,6 +12,14 @@
 
 namespace sam
 {
+
+	//
+	// Private
+	//
+
+
+	//
+	// Definitions
 
 	namespace details
 	{

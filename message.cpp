@@ -1,14 +1,24 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #include "message.h"
 
 
 namespace sam
 {
 
+	//
+	// Private
+	//
+
+
+	//
+	// Definitions
+
 	namespace details
 	{
-
-		//
-		// Definitions
 
 		message::message(signature_t signature) :
 			_signature{signature}

@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #pragma once
 
 #include <typeindex>
@@ -7,11 +12,16 @@
 namespace sam
 {
 
+	//
+	// Private
+	//
+
+
+	//
+	// Declarations
+
 	namespace details
 	{
-
-		//
-		// Declarations
 
 		typedef std::type_index signature_t;
 
@@ -24,10 +34,14 @@ namespace sam
 		template <typename ...Types_t>
 		signature_t new_signature();
 
+	}
 
 
-		//
-		// Definitions
+	//
+	// Definitions
+
+	namespace details
+	{
 
 		template <typename ...Types_t>
 		signature_t new_signature()

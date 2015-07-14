@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #pragma once
 
 #include <functional>
@@ -11,6 +16,11 @@ namespace sam
 {
 
 	//
+	// Public
+	//
+
+
+	//
 	// Declarations
 
 	enum ctlcode_t
@@ -21,11 +31,16 @@ namespace sam
 
 
 
+	//
+	// Private
+	//
+
+
+	//
+	// Declarations
+
 	namespace details
 	{
-
-		//
-		// Declarations
 
 		class handler
 		{
@@ -90,10 +105,14 @@ namespace sam
 		template <typename ...Arguments_t>
 		std::shared_ptr<handler> new_shared_handler(void (*function_pointer)(Arguments_t...));
 
+	}
 
 
-		//
-		// Definitions
+	//
+	// Definitions
+
+	namespace details
+	{
 
 		template <typename ...Arguments_t>
 		concrete_handler<ctlcode_t (Arguments_t...)>::concrete_handler(std::function<ctlcode_t (Arguments_t...)> function) :

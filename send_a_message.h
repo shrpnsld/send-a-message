@@ -1,3 +1,8 @@
+//
+// This file is a part of 'send-a-message' project
+// See more at https://github.com/shrpnsld/send-a-message
+//
+
 #pragma once
 
 #include <thread>
@@ -16,6 +21,11 @@
 
 namespace sam
 {
+
+	//
+	// Public
+	//
+
 
 	//
 	// Declarations
@@ -39,6 +49,15 @@ namespace sam
 		details::msgqueue_t &_message_queue;
 	};
 
+
+
+	//
+	// Private
+	//
+
+
+	//
+	// Declarations
 
 	namespace details
 	{
@@ -64,6 +83,12 @@ namespace sam
 		ctlcode_t dispatch_message(const handlers_t &handlers, std::shared_ptr<message> message_ptr);
 
 	}
+
+
+
+	//
+	// Public
+	//
 
 
 	//
@@ -107,6 +132,15 @@ namespace sam
 	}
 
 
+
+	//
+	// Private
+	//
+
+
+	//
+	// Definitions
+
 	namespace details
 	{
 
@@ -117,6 +151,7 @@ namespace sam
 			create_message_queue_promise.set_value();
 
 			function(std::move(arguments)...);
+
 			details::remove_message_queue_for_thread(std::this_thread::get_id());
 		}
 
