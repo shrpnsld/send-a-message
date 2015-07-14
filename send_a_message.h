@@ -5,6 +5,7 @@
 #include <utility>
 #include <memory>
 #include <type_traits>
+#include <future>
 
 #include "thread_safe_queue.h"
 #include "message.h"
@@ -46,10 +47,10 @@ namespace sam
 
 
 		template <typename Function_t, typename ...Arguments_t>
-		void receivable_function_template(Function_t function, Arguments_t ...arguments);
+		void receivable_function_template(std::promise<void> &create_message_queue_promise, Function_t function, Arguments_t ...arguments);
 
 		template <typename Function_t, typename ...Arguments_t>
-		void (*make_receivable_function())(typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...);
+		void (*make_receivable_function())(std::promise<void> &, typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...);
 
 		template <typename ...Whatever_t>
 		void unpack(Whatever_t &&...);
@@ -72,8 +73,10 @@ namespace sam
 	std::thread receivable_thread(Function_t &&function, Arguments_t &&...arguments)
 	{
 		auto receivable_function = details::make_receivable_function<Function_t, Arguments_t...>();
-		std::thread thread{receivable_function, std::forward<Function_t>(function), std::forward<Arguments_t>(arguments)...};
-		details::create_message_queue_for_thread(thread.get_id());
+		std::promise<void> create_message_queue_promise;
+		std::future<void> message_queue_created = create_message_queue_promise.get_future();
+		std::thread thread{receivable_function, std::ref(create_message_queue_promise), std::forward<Function_t>(function), std::forward<Arguments_t>(arguments)...};
+		message_queue_created.get();
 
 		return thread;
 	}
@@ -108,15 +111,18 @@ namespace sam
 	{
 
 		template <typename Function_t, typename ...Arguments_t>
-		void receivable_function_template(Function_t function, Arguments_t ...arguments)
+		void receivable_function_template(std::promise<void> &create_message_queue_promise, Function_t function, Arguments_t ...arguments)
 		{
+			details::create_message_queue_for_thread(std::this_thread::get_id());
+			create_message_queue_promise.set_value();
+
 			function(std::move(arguments)...);
 			details::remove_message_queue_for_thread(std::this_thread::get_id());
 		}
 
 
 		template <typename Function_t, typename ...Arguments_t>
-		void (*make_receivable_function())(typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...)
+		void (*make_receivable_function())(std::promise<void> &, typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...)
 		{
 			return details::receivable_function_template<typename std::decay<Function_t>::type, typename std::decay<Arguments_t>::type...>;
 		}
