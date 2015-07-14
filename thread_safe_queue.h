@@ -40,7 +40,6 @@ namespace sam
 
 			std::unique_ptr<node_t> _head;
 			node_t *_tail;
-			std::mutex _head_mutex;
 			std::mutex _tail_mutex;
 			std::condition_variable _is_empty;
 		};
@@ -89,7 +88,6 @@ namespace sam
 		template <typename Type_t>
 		std::shared_ptr<Type_t> queue<Type_t>::pop()
 		{
-			std::lock_guard<std::mutex> lock_guard(_head_mutex);
 			if (_head.get() == _synchronized_get_tail())
 			{
 				return std::shared_ptr<Type_t>(nullptr);
@@ -110,7 +108,6 @@ namespace sam
 		template <typename Type_t>
 		std::shared_ptr<Type_t> queue<Type_t>::wait_and_pop()
 		{
-			std::lock_guard<std::mutex> lock_guard(_head_mutex);
 			std::unique_lock<std::mutex> lock(_tail_mutex);
 			_is_empty.wait(lock, [this]{return _head.get() != _tail;});
 			lock.unlock();
