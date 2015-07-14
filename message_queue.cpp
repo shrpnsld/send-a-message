@@ -19,14 +19,26 @@ namespace sam
 
 
 	//
-	// Definitions
+	// Declarations
 
 	namespace details
 	{
 
-		std::mutex _mutex;
-		std::map<std::thread::id, queue<message>> _message_queues;
+		typedef std::map<std::thread::id, queue<message>> msgqueuelst_t;
 
+		std::mutex _mutex;
+		msgqueuelst_t _message_queues;
+
+		msgqueuelst_t::iterator find_message_queue(std::thread::id id);
+
+	}
+
+
+	//
+	// Definitions
+
+	namespace details
+	{
 
 		void create_message_queue_for_thread(std::thread::id id)
 		{
@@ -46,12 +58,18 @@ namespace sam
 
 		msgqueue_t &message_queue_for_thread(std::thread::id id)
 		{
-			std::lock_guard<std::mutex> lock_guard{_mutex};
-
-			auto iterator = _message_queues.find(id);
+			auto iterator = find_message_queue(id);
 			assert(iterator != _message_queues.end()); // if fails - no message queue was created for the thread
 
 			return iterator->second;
+		}
+
+
+		msgqueuelst_t::iterator find_message_queue(std::thread::id id)
+		{
+			std::lock_guard<std::mutex> lock_guard{_mutex};
+
+			return _message_queues.find(id);
 		}
 
 	}
