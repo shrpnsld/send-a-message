@@ -127,7 +127,7 @@ namespace sam
 	template <typename ...Arguments_t>
 	void mailbox::send(Arguments_t &&...arguments)
 	{
-		std::shared_ptr<details::message> message_ptr{details::new_shared_message(std::forward<Arguments_t>(arguments)...)};
+		std::shared_ptr<details::message> message_ptr{details::make_shared_message(std::forward<Arguments_t>(arguments)...)};
 		_message_queue.push(message_ptr);
 	}
 
@@ -173,12 +173,12 @@ namespace sam
 		handlers_t register_handlers(Functions_t &&...functions)
 		{
 			handlers_t handlers;
-			unpack(register_handler(handlers, new_shared_handler(std::forward<Functions_t>(functions)))...);
+			unpack(register_handler(handlers, make_shared_handler(std::forward<Functions_t>(functions)))...);
 
-			signature_t ctlcode_handler_signature{new_signature<ctlcode_t>()};
+			signature_t ctlcode_handler_signature{make_signature<ctlcode_t>()};
 			if (handlers.find(ctlcode_handler_signature) == handlers.end())
 			{
-				register_handler(handlers, new_shared_handler(default_control_code_handler));
+				register_handler(handlers, make_shared_handler(default_control_code_handler));
 			}
 
 			return handlers;

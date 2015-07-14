@@ -30,9 +30,8 @@ namespace sam
 		{
 		};
 
-
 		template <typename ...Types_t>
-		signature_t new_signature();
+		signature_t make_signature();
 
 	}
 
@@ -44,7 +43,7 @@ namespace sam
 	{
 
 		template <typename ...Types_t>
-		signature_t new_signature()
+		signature_t make_signature()
 		{
 			return signature_t(typeid(pack_t<typename std::decay<Types_t>::type...>));
 		}
