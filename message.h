@@ -86,7 +86,7 @@ namespace sam
 		template <typename ...Types_t>
 		std::shared_ptr<message> make_shared_message(Types_t &&...arguments)
 		{
-			return std::shared_ptr<message>{new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...)};
+			return std::shared_ptr<message>{new concrete_message<Types_t...>{std::forward<Types_t>(arguments)...}};
 		}
 
 	}

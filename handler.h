@@ -152,7 +152,7 @@ namespace sam
 		template <typename ...Arguments_t>
 		std::shared_ptr<handler> make_shared_handler(std::function<ctlcode_t (Arguments_t...)> function)
 		{
-			return std::shared_ptr<handler>{new concrete_handler<ctlcode_t (Arguments_t...)>(function)};
+			return std::shared_ptr<handler>{new concrete_handler<ctlcode_t (Arguments_t...)>{function}};
 		}
 
 
@@ -166,7 +166,7 @@ namespace sam
 		template <typename ...Arguments_t>
 		std::shared_ptr<handler> make_shared_handler(std::function<void (Arguments_t...)> function)
 		{
-			return std::shared_ptr<handler>{new concrete_handler<void (Arguments_t...)>(function)};
+			return std::shared_ptr<handler>{new concrete_handler<void (Arguments_t...)>{function}};
 		}
 
 
