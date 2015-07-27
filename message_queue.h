@@ -25,10 +25,18 @@ namespace sam
 
 		typedef queue<message> msgqueue_t;
 
-		void create_message_queue_for_thread(std::thread::id id);
-		void remove_message_queue_for_thread(std::thread::id id);
-
 		msgqueue_t &message_queue_for_thread(std::thread::id id);
+
+
+		class message_queue_guard
+		{
+		public:
+			message_queue_guard(std::thread::id id);
+			~message_queue_guard();
+
+		private:
+			std::thread::id _id;
+		};
 
 	}
 

@@ -40,19 +40,20 @@ namespace sam
 	namespace details
 	{
 
-		void create_message_queue_for_thread(std::thread::id id)
+		message_queue_guard::message_queue_guard(std::thread::id id)
+			: _id(id)
 		{
 			std::lock_guard<std::mutex> lock_guard{_mutex};
 
-			_message_queues.emplace(id, queue<message>{});
+			_message_queues.emplace(_id, queue<message>{});
 		}
 
 
-		void remove_message_queue_for_thread(std::thread::id id)
+		message_queue_guard::~message_queue_guard()
 		{
 			std::lock_guard<std::mutex> lock_guard{_mutex};
 
-			_message_queues.erase(id);
+			_message_queues.erase(_id);
 		}
 
 

@@ -147,12 +147,10 @@ namespace sam
 		template <typename Function_t, typename ...Arguments_t>
 		void receivable_function_template(std::promise<void> &create_message_queue_promise, Function_t function, Arguments_t ...arguments)
 		{
-			details::create_message_queue_for_thread(std::this_thread::get_id());
+			details::message_queue_guard message_queue_guard{std::this_thread::get_id()};
 			create_message_queue_promise.set_value();
 
 			function(std::move(arguments)...);
-
-			details::remove_message_queue_for_thread(std::this_thread::get_id());
 		}
 
 
