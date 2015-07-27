@@ -9,6 +9,7 @@
 #include <utility>
 #include <mutex>
 #include <condition_variable>
+#include <chrono>
 #include <cassert>
 
 
@@ -37,6 +38,9 @@ namespace sam
 			void push(std::shared_ptr<Type_t> data);
 			std::shared_ptr<Type_t> pop();
 			std::shared_ptr<Type_t> wait_and_pop();
+
+			template <typename Rep, typename Period>
+			std::shared_ptr<Type_t> wait_for_and_pop(const std::chrono::duration<Rep, Period> &timeout_duration);
 
 		private:
 			struct node_t
@@ -126,6 +130,23 @@ namespace sam
 			std::unique_lock<std::mutex> lock(_tail_mutex);
 			_is_empty.wait(lock, [this]{return _head.get() != _tail;});
 			lock.unlock();
+
+			return _pop();
+		}
+
+
+		template <typename Type_t>
+		template <typename Rep, typename Period>
+		std::shared_ptr<Type_t> queue<Type_t>::wait_for_and_pop(const std::chrono::duration<Rep, Period> &timeout_duration)
+		{
+			std::unique_lock<std::mutex> lock(_tail_mutex);
+			bool has_messages = _is_empty.wait_for(lock, timeout_duration, [this]{return _head.get() != _tail;});
+			lock.unlock();
+
+			if (!has_messages)
+			{
+				return std::shared_ptr<Type_t>(nullptr);
+			}
 
 			return _pop();
 		}

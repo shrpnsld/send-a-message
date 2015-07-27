@@ -46,9 +46,16 @@ namespace sam
 		}
 
 
-		ctlcode_t default_control_code_handler(ctlcode_t control_codee)
+		ctlcode_t default_control_code_handler(ctlcode_t control_code)
 		{
-			return control_codee;
+			return control_code;
+		}
+
+
+		ctlcode_t default_timeout_handler(timeout)
+		{
+			std::this_thread::yield();
+			return CONTINUE;
 		}
 
 

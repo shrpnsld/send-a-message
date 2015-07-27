@@ -11,6 +11,7 @@
 #include <memory>
 #include <type_traits>
 #include <future>
+#include <chrono>
 
 #include "thread_safe_queue.h"
 #include "message.h"
@@ -35,6 +36,9 @@ namespace sam
 
 	template <typename ...Functions_t>
 	void receive(Functions_t &&...functions);
+
+	template <typename Rep, typename Period, typename ...Functions_t>
+	void receive_for(const std::chrono::duration<Rep, Period> &timeout_duration, Functions_t &&...functions);
 
 
 	class mailbox
@@ -79,7 +83,11 @@ namespace sam
 		template <typename ...Functions_t>
 		handlers_t register_handlers(Functions_t &&...functions);
 
+		template <typename ...Functions_t>
+		handlers_t register_handlers_with_timeout(Functions_t &&...functions);
+
 		ctlcode_t default_control_code_handler(ctlcode_t control_code);
+		ctlcode_t default_timeout_handler(timeout);
 		ctlcode_t dispatch_message(const handlers_t &handlers, std::shared_ptr<message> message_ptr);
 
 	}
@@ -99,7 +107,7 @@ namespace sam
 	{
 		auto receivable_function = details::make_receivable_function<Function_t, Arguments_t...>();
 		std::promise<void> create_message_queue_promise;
-		std::future<void> message_queue_created = create_message_queue_promise.get_future();
+		std::future<void> message_queue_created{create_message_queue_promise.get_future()};
 		std::thread thread{receivable_function, std::ref(create_message_queue_promise), std::forward<Function_t>(function), std::forward<Arguments_t>(arguments)...};
 		message_queue_created.get();
 
@@ -115,6 +123,28 @@ namespace sam
 		for (;;)
 		{
 			std::shared_ptr<details::message> message_ptr{message_queue.wait_and_pop()};
+			ctlcode_t control_code{details::dispatch_message(handlers, message_ptr)};
+			if (control_code == STOP)
+			{
+				break;
+			}
+		}
+	}
+
+
+	template <typename Rep, typename Period, typename ...Functions_t>
+	void receive_for(const std::chrono::duration<Rep, Period> &timeout_duration, Functions_t &&...functions)
+	{
+		details::handlers_t handlers{details::register_handlers_with_timeout(std::forward<Functions_t>(functions)...)};
+		details::msgqueue_t &message_queue{details::message_queue_for_thread(std::this_thread::get_id())};
+		for (;;)
+		{
+			std::shared_ptr<details::message> message_ptr{message_queue.wait_for_and_pop(timeout_duration)};
+			if (message_ptr == nullptr)
+			{
+				message_ptr = details::make_shared_message(timeout{});
+			}
+
 			ctlcode_t control_code{details::dispatch_message(handlers, message_ptr)};
 			if (control_code == STOP)
 			{
@@ -177,6 +207,21 @@ namespace sam
 			if (handlers.find(ctlcode_handler_signature) == handlers.end())
 			{
 				register_handler(handlers, make_shared_handler(default_control_code_handler));
+			}
+
+			return handlers;
+		}
+
+
+		template <typename ...Functions_t>
+		handlers_t register_handlers_with_timeout(Functions_t &&...functions)
+		{
+			handlers_t handlers{register_handlers(std::forward<Functions_t>(functions)...)};
+
+			signature_t timeout_handler_signature{make_signature<timeout>()};
+			if (handlers.find(timeout_handler_signature) == handlers.end())
+			{
+				register_handler(handlers, make_shared_handler(default_timeout_handler));
 			}
 
 			return handlers;

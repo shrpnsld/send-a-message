@@ -30,6 +30,11 @@ namespace sam
 	};
 
 
+	struct timeout
+	{
+	};
+
+
 
 	//
 	// Private
