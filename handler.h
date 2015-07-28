@@ -30,7 +30,7 @@ namespace sam
 	};
 
 
-	struct timeout
+	struct timeout_error
 	{
 	};
 

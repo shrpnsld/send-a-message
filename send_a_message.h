@@ -34,11 +34,11 @@ namespace sam
 	template <typename Function_t, typename ...Arguments_t>
 	std::thread receivable_thread(Function_t &&function, Arguments_t &&...arguments);
 
-	template <typename ...Functions_t>
-	void receive(Functions_t &&...functions);
+	template <typename ...Callables_t>
+	void receive(Callables_t &&...callables);
 
-	template <typename Rep, typename Period, typename ...Functions_t>
-	void receive_for(const std::chrono::duration<Rep, Period> &timeout_duration, Functions_t &&...functions);
+	template <typename Rep, typename Period, typename ...Callables_t>
+	void receive_for(const std::chrono::duration<Rep, Period> &timeout, Callables_t &&...callables);
 
 
 	class mailbox
@@ -80,14 +80,14 @@ namespace sam
 
 		int register_handler(handlers_t &handlers, std::shared_ptr<handler> handler);
 
-		template <typename ...Functions_t>
-		handlers_t register_handlers(Functions_t &&...functions);
+		template <typename ...Callables_t>
+		handlers_t register_handlers(Callables_t &&...callables);
 
-		template <typename ...Functions_t>
-		handlers_t register_handlers_with_timeout(Functions_t &&...functions);
+		template <typename ...Callables_t>
+		handlers_t register_handlers_with_timeout(Callables_t &&...callables);
 
 		ctlcode_t default_control_code_handler(ctlcode_t control_code);
-		ctlcode_t default_timeout_handler(timeout);
+		ctlcode_t default_timeout_handler(timeout_error);
 		ctlcode_t dispatch_message(const handlers_t &handlers, std::shared_ptr<message> message_ptr);
 
 	}
@@ -115,10 +115,10 @@ namespace sam
 	}
 
 
-	template <typename ...Functions_t>
-	void receive(Functions_t &&...functions)
+	template <typename ...Callables_t>
+	void receive(Callables_t &&...callables)
 	{
-		details::handlers_t handlers = details::register_handlers(std::forward<Functions_t>(functions)...);
+		details::handlers_t handlers = details::register_handlers(std::forward<Callables_t>(callables)...);
 		details::msgqueue_t &message_queue = details::message_queue_for_thread(std::this_thread::get_id());
 		for (;;)
 		{
@@ -132,17 +132,17 @@ namespace sam
 	}
 
 
-	template <typename Rep, typename Period, typename ...Functions_t>
-	void receive_for(const std::chrono::duration<Rep, Period> &timeout_duration, Functions_t &&...functions)
+	template <typename Rep, typename Period, typename ...Callables_t>
+	void receive_for(const std::chrono::duration<Rep, Period> &timeout, Callables_t &&...callables)
 	{
-		details::handlers_t handlers = details::register_handlers_with_timeout(std::forward<Functions_t>(functions)...);
+		details::handlers_t handlers = details::register_handlers_with_timeout(std::forward<Callables_t>(callables)...);
 		details::msgqueue_t &message_queue = details::message_queue_for_thread(std::this_thread::get_id());
 		for (;;)
 		{
-			std::shared_ptr<details::message> message_ptr = message_queue.wait_for_and_pop(timeout_duration);
+			std::shared_ptr<details::message> message_ptr = message_queue.wait_for_and_pop(timeout);
 			if (message_ptr == nullptr)
 			{
-				message_ptr = details::make_shared_message(timeout());
+				message_ptr = details::make_shared_message(timeout_error());
 			}
 
 			ctlcode_t control_code = details::dispatch_message(handlers, message_ptr);
@@ -197,11 +197,11 @@ namespace sam
 		}
 
 
-		template <typename ...Functions_t>
-		handlers_t register_handlers(Functions_t &&...functions)
+		template <typename ...Callables_t>
+		handlers_t register_handlers(Callables_t &&...callables)
 		{
 			handlers_t handlers;
-			unpack(register_handler(handlers, make_shared_handler(std::forward<Functions_t>(functions)))...);
+			unpack(register_handler(handlers, make_shared_handler(std::forward<Callables_t>(callables)))...);
 
 			signature_t ctlcode_handler_signature = make_signature<ctlcode_t>();
 			if (handlers.find(ctlcode_handler_signature) == handlers.end())
@@ -213,12 +213,12 @@ namespace sam
 		}
 
 
-		template <typename ...Functions_t>
-		handlers_t register_handlers_with_timeout(Functions_t &&...functions)
+		template <typename ...Callables_t>
+		handlers_t register_handlers_with_timeout(Callables_t &&...callables)
 		{
-			handlers_t handlers = register_handlers(std::forward<Functions_t>(functions)...);
+			handlers_t handlers = register_handlers(std::forward<Callables_t>(callables)...);
 
-			signature_t timeout_handler_signature(make_signature<timeout>());
+			signature_t timeout_handler_signature(make_signature<timeout_error>());
 			if (handlers.find(timeout_handler_signature) == handlers.end())
 			{
 				register_handler(handlers, make_shared_handler(default_timeout_handler));

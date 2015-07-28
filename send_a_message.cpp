@@ -52,7 +52,7 @@ namespace sam
 		}
 
 
-		ctlcode_t default_timeout_handler(timeout)
+		ctlcode_t default_timeout_handler(timeout_error)
 		{
 			std::this_thread::yield();
 			return CONTINUE;
