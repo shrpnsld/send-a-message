@@ -51,11 +51,11 @@ namespace sam
 		};
 
 
-		template <typename Return_t, typename ...Arguments_t, size_t ...Indices>
-		Return_t apply_impl(const std::function<Return_t (Arguments_t...)> &function, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>);
+		template <typename Callable_t, typename Return_t, typename ...Arguments_t, size_t ...Indices>
+		Return_t apply_impl(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>);
 
-		template <typename Return_t, typename ...Arguments_t>
-		Return_t apply(const std::function<Return_t (Arguments_t...)> &function, const std::tuple<Arguments_t...> &arguments);
+		template <typename Callable_t, typename Return_t, typename ...Arguments_t>
+		Return_t apply(Callable_t &callable, const std::tuple<Arguments_t...> &arguments);
 
 	}
 
@@ -66,17 +66,17 @@ namespace sam
 	namespace details
 	{
 
-		template <typename Return_t, typename ...Arguments_t, size_t ...Indices>
-		Return_t apply_impl(const std::function<Return_t (Arguments_t...)> &function, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>)
+		template <typename Callable_t, typename Return_t, typename ...Arguments_t, size_t ...Indices>
+		Return_t apply_impl(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>)
 		{
-			return function(std::get<Indices>(arguments)...);
+			return callable(std::get<Indices>(arguments)...);
 		}
 
 
-		template <typename Return_t, typename ...Arguments_t>
-		Return_t apply(const std::function<Return_t (Arguments_t...)> &function, const std::tuple<Arguments_t...> &arguments)
+		template <typename Callable_t, typename Return_t, typename ...Arguments_t>
+		Return_t apply(Callable_t &callable, const std::tuple<Arguments_t...> &arguments)
 		{
-			return apply_impl(function, arguments, typename make_sequence<Arguments_t...>::type());
+			return apply_impl<Callable_t, Return_t, Arguments_t...>(std::forward<Callable_t>(callable), arguments, typename make_sequence<Arguments_t...>::type());
 		}
 
 	}
