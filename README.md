@@ -12,9 +12,11 @@ Library for inter-thread message passing.
 
 Thread should be started using `sam::receivable_thread` function. It is similar to `std::thread` constructor.
 
-`sam::receive` function runs message receiving loop. It accepts function pointers and `std::function` as handlers. They can be `void` or can return any of the following `sam::ctlcode_t` values:
+`sam::receive` function runs message receiving loop. As handlers it accepts any [Callables](http://en.cppreference.com/w/cpp/concept/Callable) that return `void` or any of the following `sam::ctlcode_t` values:
 * `sam::CONTINUE` - continue running message receiving loop (same as `void` function)
 * `sam::STOP` - stop running message receiving loop
+
+`sam::receive_for` accepts also a timeout parameter.
 
 To send a message the member-function `sam::mailbox::send` should be called on an instance of a `sam::mailbox`.
 
@@ -26,8 +28,13 @@ std::thread sam::receivable_thread(Function_t function, Arguments_t &&...argumen
 ```
 
 ```C++
-template <Functions_t ...functions>
-void sam::receive(Functions_t &&...functions);
+template <typename ...Callables_t>
+void sam::receive(Callables_t &&...callables);
+```
+
+```C++
+template <typename Rep, typename Period, typename ...Callables_t>
+void receive_for(const std::chrono::duration<Rep, Period> &timeout, Callables_t &&...callables);
 ```
 
 ```C++
@@ -49,37 +56,40 @@ Code:
 ```
 
 ```C++
-// handlers (with code that prints function signature)
-void handler_int_float(int i, float f);
-void handler_cstring(const char *);
-
 // receiver-thread function
 void receiver()
 {
 	// register handlers for each message type
 	sam::receive(
-		handler_int_float,
-		handler_cstring,
+		[](int i, double d)
+		{
+			printf("message: %i and %f", i, d);
+		},
+
+		[](const char *cstring)
+		{
+			printf("message: '%s'", cstring);
+		}
 	);
 }
 ```
 
 ```C++
 // start std::thread and asociate message queue with it
-std::thread thread(sam::receivable_thread(receiver));
+std::thread thread = sam::receivable_thread(receiver);
 
 // get mailbox for the thread
 sam::mailbox mailbox(thread);
 
 // send messages
-mailbox.send(42, 3.14159f);
+mailbox.send(42, M_PI);
 mailbox.send("hellomoto!");
 ```
 
 Output:
 ```
-void handle_int_float(int, float)
-void handle_cstring(const char *)
+message: 42 and 3.141593
+message: 'hellomoto!'
 ```
 
 
