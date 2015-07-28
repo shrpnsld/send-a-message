@@ -128,7 +128,7 @@ namespace sam
 		template <typename Callable_t, typename ...Arguments_t>
 		ctlcode_t concrete_handler<Callable_t, ctlcode_t, Arguments_t...>::do_call(void *context)
 		{
-			std::tuple<Arguments_t...> arguments(*reinterpret_cast<std::tuple<Arguments_t...> *>(context));
+			std::tuple<Arguments_t...> &arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
 			return apply<Callable_t, ctlcode_t, Arguments_t...>(_callable, arguments);
 		}
 
@@ -145,7 +145,7 @@ namespace sam
 		template <typename Callable_t, typename ...Arguments_t>
 		ctlcode_t concrete_handler<Callable_t, void, Arguments_t...>::do_call(void *context)
 		{
-			std::tuple<Arguments_t...> arguments(*reinterpret_cast<std::tuple<Arguments_t...> *>(context));
+			std::tuple<Arguments_t...> &arguments = *reinterpret_cast<std::tuple<Arguments_t...> *>(context);
 			apply<Callable_t, void, Arguments_t...>(_callable, arguments);
 			return CONTINUE;
 		}
