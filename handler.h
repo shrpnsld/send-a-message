@@ -119,7 +119,7 @@ namespace sam
 		template <typename Callable_t, typename ...Arguments_t>
 		template <typename CallableArg_t>
 		concrete_handler<Callable_t, ctlcode_t, Arguments_t...>::concrete_handler(CallableArg_t &&callable) :
-			handler{make_signature<Arguments_t...>()},
+			handler(make_signature<Arguments_t...>()),
 			_callable(std::forward<CallableArg_t>(callable))
 		{
 		}
@@ -128,7 +128,7 @@ namespace sam
 		template <typename Callable_t, typename ...Arguments_t>
 		ctlcode_t concrete_handler<Callable_t, ctlcode_t, Arguments_t...>::do_call(void *context)
 		{
-			std::tuple<Arguments_t...> arguments{*reinterpret_cast<std::tuple<Arguments_t...> *>(context)};
+			std::tuple<Arguments_t...> arguments(*reinterpret_cast<std::tuple<Arguments_t...> *>(context));
 			return apply<Callable_t, ctlcode_t, Arguments_t...>(_callable, arguments);
 		}
 
@@ -136,7 +136,7 @@ namespace sam
 		template <typename Callable_t, typename ...Arguments_t>
 		template <typename CallableArg_t>
 		concrete_handler<Callable_t, void, Arguments_t...>::concrete_handler(CallableArg_t &&callable) :
-			handler{make_signature<Arguments_t...>()},
+			handler(make_signature<Arguments_t...>()),
 			_callable(std::forward<CallableArg_t>(callable))
 		{
 		}
@@ -145,7 +145,7 @@ namespace sam
 		template <typename Callable_t, typename ...Arguments_t>
 		ctlcode_t concrete_handler<Callable_t, void, Arguments_t...>::do_call(void *context)
 		{
-			std::tuple<Arguments_t...> arguments{*reinterpret_cast<std::tuple<Arguments_t...> *>(context)};
+			std::tuple<Arguments_t...> arguments(*reinterpret_cast<std::tuple<Arguments_t...> *>(context));
 			apply<Callable_t, void, Arguments_t...>(_callable, arguments);
 			return CONTINUE;
 		}
@@ -154,7 +154,7 @@ namespace sam
 		template <typename Callable_t, typename Return_t, typename ...Arguments_t>
 		std::shared_ptr<handler> make_handler_from_callable(Callable_t &&callable, Return_t (Callable_t::*)(Arguments_t...) const)
 		{
-			return std::shared_ptr<handler>{new concrete_handler<Callable_t, Return_t, Arguments_t...>{std::forward<Callable_t>(callable)}};
+			return std::shared_ptr<handler>(new concrete_handler<Callable_t, Return_t, Arguments_t...>(std::forward<Callable_t>(callable)));
 		}
 
 
@@ -168,7 +168,7 @@ namespace sam
 		template <typename Return_t, typename ...Arguments_t>
 		std::shared_ptr<handler> make_shared_handler(Return_t (*function_pointer)(Arguments_t...))
 		{
-			return std::shared_ptr<handler>{new concrete_handler<Return_t (*)(Arguments_t...), Return_t, Arguments_t...>{function_pointer}};
+			return std::shared_ptr<handler>(new concrete_handler<Return_t (*)(Arguments_t...), Return_t, Arguments_t...>(function_pointer));
 		}
 
 	}

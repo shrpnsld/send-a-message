@@ -21,7 +21,7 @@ namespace sam
 	{
 
 		handler::handler(const signature_t &signature) :
-			_signature{signature}
+			_signature(signature)
 		{
 		}
 

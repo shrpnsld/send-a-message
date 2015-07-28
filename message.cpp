@@ -21,7 +21,7 @@ namespace sam
 	{
 
 		message::message(signature_t signature) :
-			_signature{signature}
+			_signature(signature)
 		{
 		}
 

@@ -66,10 +66,10 @@ void receiver()
 
 ```C++
 // start std::thread and asociate message queue with it
-std::thread thread{sam::receivable_thread(receiver)};
+std::thread thread(sam::receivable_thread(receiver));
 
 // get mailbox for the thread
-sam::mailbox mailbox{thread};
+sam::mailbox mailbox(thread);
 
 // send messages
 mailbox.send(42, 3.14159f);

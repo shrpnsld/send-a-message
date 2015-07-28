@@ -43,15 +43,15 @@ namespace sam
 		message_queue_guard::message_queue_guard(std::thread::id id)
 			: _id(id)
 		{
-			std::lock_guard<std::mutex> lock_guard{_mutex};
+			std::lock_guard<std::mutex> lock_guard(_mutex);
 
-			_message_queues.emplace(_id, queue<message>{});
+			_message_queues.emplace(_id, queue<message>());
 		}
 
 
 		message_queue_guard::~message_queue_guard()
 		{
-			std::lock_guard<std::mutex> lock_guard{_mutex};
+			std::lock_guard<std::mutex> lock_guard(_mutex);
 
 			_message_queues.erase(_id);
 		}
@@ -68,7 +68,7 @@ namespace sam
 
 		msgqueuelst_t::iterator find_message_queue(std::thread::id id)
 		{
-			std::lock_guard<std::mutex> lock_guard{_mutex};
+			std::lock_guard<std::mutex> lock_guard(_mutex);
 
 			return _message_queues.find(id);
 		}

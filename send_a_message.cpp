@@ -22,7 +22,7 @@ namespace sam
 	// Definitions
 
 	mailbox::mailbox(const std::thread &thread) :
-		_message_queue{details::message_queue_for_thread(thread.get_id())}
+		_message_queue(details::message_queue_for_thread(thread.get_id()))
 	{
 	}
 
@@ -64,7 +64,7 @@ namespace sam
 			auto iterator = handlers.find(message_ptr->signature());
 			assert(iterator != handlers.end()); // if fails - handler for message signature not found
 
-			std::shared_ptr<handler> handler_ptr{iterator->second};
+			std::shared_ptr<handler> handler_ptr = iterator->second;
 			return handler_ptr->do_call(message_ptr->data());
 		}
 
