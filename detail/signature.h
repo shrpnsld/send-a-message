@@ -11,16 +11,7 @@
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		typedef std::type_index signature_t;
@@ -34,12 +25,12 @@ namespace sam
 		signature_t make_signature();
 
 	}
+}
 
 
-	//
-	// Definitions
-
-	namespace details
+namespace sam
+{
+	namespace detail
 	{
 
 		template <typename ...Types_t>
@@ -49,6 +40,5 @@ namespace sam
 		}
 
 	}
-
 }
 

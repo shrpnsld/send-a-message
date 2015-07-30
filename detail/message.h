@@ -13,16 +13,7 @@
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		class message
@@ -59,12 +50,12 @@ namespace sam
 		std::shared_ptr<message> make_shared_message(Types_t &&...arguments);
 
 	}
+}
 
 
-	//
-	// Definitions
-
-	namespace details
+namespace sam
+{
+	namespace detail
 	{
 
 		template <typename ...Types_t>
@@ -90,6 +81,5 @@ namespace sam
 		}
 
 	}
-
 }
 

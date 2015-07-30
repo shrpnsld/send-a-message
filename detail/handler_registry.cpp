@@ -3,40 +3,15 @@
 // See more at https://github.com/shrpnsld/send-a-message
 //
 
-#include <map>
-#include <mutex>
+#include <thread>
 #include <cassert>
 
-#include "send_a_message.h"
+#include "handler_registry.h"
 
 
 namespace sam
 {
-
-	//
-	// Public
-	//
-
-
-	//
-	// Definitions
-
-	mailbox::mailbox(const std::thread &thread) :
-		_message_queue(details::message_queue_for_thread(thread.get_id()))
-	{
-	}
-
-
-
-	//
-	// Private
-	//
-
-
-	//
-	// Definitions
-
-	namespace details
+	namespace detail
 	{
 
 		int register_handler(handlers_t &handlers, std::shared_ptr<handler> handler)
@@ -69,6 +44,5 @@ namespace sam
 		}
 
 	}
-
 }
 

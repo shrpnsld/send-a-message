@@ -8,16 +8,7 @@
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		template <std::size_t ...>
@@ -58,12 +49,12 @@ namespace sam
 		Return_t apply(Callable_t &callable, const std::tuple<Arguments_t...> &arguments);
 
 	}
+}
 
 
-	//
-	// Definitions
-
-	namespace details
+namespace sam
+{
+	namespace detail
 	{
 
 		template <typename Callable_t, typename Return_t, typename ...Arguments_t, size_t ...Indices>
@@ -80,6 +71,5 @@ namespace sam
 		}
 
 	}
-
 }
 

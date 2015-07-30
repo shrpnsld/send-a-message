@@ -10,21 +10,11 @@
 #include <mutex>
 #include <condition_variable>
 #include <chrono>
-#include <cassert>
 
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		template <typename Type_t>
@@ -59,12 +49,12 @@ namespace sam
 		};
 
 	}
+}
 
 
-	//
-	// Definitions
-
-	namespace details
+namespace sam
+{
+	namespace detail
 	{
 
 		template <typename Type_t>
@@ -163,6 +153,5 @@ namespace sam
 		}
 
 	}
-
 }
 

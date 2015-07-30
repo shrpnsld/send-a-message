@@ -3,40 +3,30 @@
 // See more at https://github.com/shrpnsld/send-a-message
 //
 
-#include "message.h"
+#include "handler.h"
 
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Definitions
-
-	namespace details
+	namespace detail
 	{
 
-		message::message(signature_t signature) :
+		handler::handler(const signature_t &signature) :
 			_signature(signature)
 		{
 		}
 
 
-		message::~message()
+		handler::~handler()
 		{
 		}
 
 
-		const signature_t message::signature() const
+		const signature_t &handler::signature() const
 		{
 			return _signature;
 		}
 
 	}
-
 }
 

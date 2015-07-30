@@ -6,22 +6,14 @@
 #include <map>
 #include <thread>
 #include <mutex>
+#include <cassert>
 
 #include "message_queue.h"
 
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		typedef std::map<std::thread::id, queue<message>> msgqueuelst_t;
@@ -32,12 +24,12 @@ namespace sam
 		msgqueuelst_t::iterator find_message_queue(std::thread::id id);
 
 	}
+}
 
 
-	//
-	// Definitions
-
-	namespace details
+namespace sam
+{
+	namespace detail
 	{
 
 		message_queue_guard::message_queue_guard(std::thread::id id)
@@ -74,6 +66,5 @@ namespace sam
 		}
 
 	}
-
 }
 

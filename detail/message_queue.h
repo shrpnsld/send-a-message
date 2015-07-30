@@ -11,16 +11,7 @@
 
 namespace sam
 {
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		typedef queue<message> msgqueue_t;
@@ -39,6 +30,5 @@ namespace sam
 		};
 
 	}
-
 }
 

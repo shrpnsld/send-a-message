@@ -8,43 +8,14 @@
 #include <functional>
 #include <memory>
 
+#include "../flags.h"
 #include "signature.h"
 #include "apply.h"
 
 
 namespace sam
 {
-
-	//
-	// Public
-	//
-
-
-	//
-	// Declarations
-
-	enum ctlcode_t
-	{
-		CONTINUE = 1,
-		STOP = -1
-	};
-
-
-	struct timeout_error
-	{
-	};
-
-
-
-	//
-	// Private
-	//
-
-
-	//
-	// Declarations
-
-	namespace details
+	namespace detail
 	{
 
 		class handler
@@ -108,12 +79,12 @@ namespace sam
 		std::shared_ptr<handler> make_shared_handler(Return_t (*function_pointer)(Arguments_t...));
 
 	}
+}
 
 
-	//
-	// Definitions
-
-	namespace details
+namespace sam
+{
+	namespace detail
 	{
 
 		template <typename Callable_t, typename ...Arguments_t>
@@ -172,6 +143,5 @@ namespace sam
 		}
 
 	}
-
 }
 
