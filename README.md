@@ -10,13 +10,13 @@ Library for inter-thread message passing.
 
 # Usage
 
-Thread should be started using `sam::receivable_thread` function. It is similar to `std::thread` constructor.
+To enable thread for message receving, it should be started using `sam::receivable_thread` function. It's interface is similar to `std::thread` constructor.
 
 `sam::receive` function runs message receiving loop. As handlers it accepts any [Callables](http://en.cppreference.com/w/cpp/concept/Callable) that return `void` or any of the following `sam::ctlcode_t` values:
 * `sam::CONTINUE` - continue running message receiving loop (same as `void` function)
 * `sam::STOP` - stop running message receiving loop
 
-`sam::receive_for` accepts also a timeout parameter.
+`sam::receive_for` function also accepts a timeout parameter.
 
 To send a message the member-function `sam::mailbox::send` should be called on an instance of a `sam::mailbox`.
 
@@ -34,7 +34,7 @@ void sam::receive(Callables_t &&...callables);
 
 ```C++
 template <typename Rep, typename Period, typename ...Callables_t>
-void receive_for(const std::chrono::duration<Rep, Period> &timeout, Callables_t &&...callables);
+void sam::receive_for(const std::chrono::duration<Rep, Period> &timeout, Callables_t &&...callables);
 ```
 
 ```C++
@@ -96,11 +96,15 @@ message: 'hellomoto!'
 
 # Notes
 
-* `sam::receivable_thread` function starts thread and creates a message queue for this thread. This message queue is destroyed after thread exit.
+* The message queue for receivable thread is created before the user function call and destroyed after return.
 
-* `sam::mailbox` object is a wrapper for a reference to a message queue.
+* `sam::mailbox` object is a wrapper for a reference to a message queue, so it is [CopyConstructible](http://en.cppreference.com/w/cpp/concept/CopyConstructible).
 
 * Arguments of `sam::mailbox::send` member-function are forwarded to internal storage and they are copied/moved only once.
 
-* Matching message to a handler is done by matching argument types ignoring reference specifiers. The matching is actually a search in a hash table.
+* Matching message to a handler is done by matching argument types ignoring reference specifiers. The matching is actually a search in a hash table that uses `std::type_index` for a key type.
+
+* There is a default handler for `sam::ctlcode_t` in `sam::receive`/`sam::receive_for` that simply returns it's argument, thus by sending control code `sam::STOP` to a thread the receive loop can be stopped from the outside. This handler can be overriden by adding callable that accepts `sam::ctlcode_t`.
+
+* There is a default handler for `sam::timeout_error` that is called if `sam::receive_for` function hasn't received any messages during `timeout` period. This handler calls `std::this_thread::yield()` function. This handler can be overriden by adding callable that accepts `sam::timeout_error`.
 
