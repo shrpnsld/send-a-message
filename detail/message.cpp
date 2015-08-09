@@ -6,27 +6,25 @@
 #include "message.h"
 
 
-namespace sam
+namespace sam { namespace detail
 {
-	namespace detail
+
+	message::message(signature_t signature) :
+		_signature(signature)
 	{
-
-		message::message(signature_t signature) :
-			_signature(signature)
-		{
-		}
-
-
-		message::~message()
-		{
-		}
-
-
-		const signature_t message::signature() const
-		{
-			return _signature;
-		}
-
 	}
+
+
+	message::~message()
+	{
+	}
+
+
+	const signature_t message::signature() const
+	{
+		return _signature;
+	}
+
+}
 }
 

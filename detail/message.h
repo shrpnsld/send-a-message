@@ -5,81 +5,78 @@
 
 #pragma once
 
+#include <tuple>
 #include <utility>
 #include <memory>
 
 #include "signature.h"
 
 
-namespace sam
+namespace sam { namespace detail
 {
-	namespace detail
+
+	class message
 	{
+	public:
+		message(signature_t signature);
+		virtual ~message() = 0;
 
-		class message
-		{
-		public:
-			message(signature_t signature);
-			virtual ~message() = 0;
+		const signature_t signature() const;
 
-			const signature_t signature() const;
+		virtual void *data() = 0;
 
-			virtual void *data() = 0;
-
-		private:
-			signature_t _signature;
-		};
+	private:
+		signature_t _signature;
+	};
 
 
-		template <typename ...Types_t>
-		class concrete_message
-			: public message
-		{
-		public:
-			template <typename ...DataTypes_t>
-			concrete_message(DataTypes_t &&...arguments);
+	template <typename ...Types_t>
+	class concrete_message
+		: public message
+	{
+	public:
+		template <typename ...DataTypes_t>
+		concrete_message(DataTypes_t &&...arguments);
 
-			virtual void *data() override;
+		virtual void *data() override;
 
-		private:
-			std::tuple<Types_t...> _data;
-		};
+	private:
+		std::tuple<Types_t...> _data;
+	};
 
 
-		template <typename ...Types_t>
-		std::shared_ptr<message> make_shared_message(Types_t &&...arguments);
+	template <typename ...Types_t>
+	std::shared_ptr<message> make_shared_message(Types_t &&...arguments);
 
-	}
+}
 }
 
 
-namespace sam
+namespace sam { namespace detail
 {
-	namespace detail
+
+	template <typename ...Types_t>
+	template <typename ...DataTypes_t>
+	concrete_message<Types_t...>::concrete_message(DataTypes_t &&...arguments) :
+		message(make_signature<Types_t...>()),
+		_data(std::forward<DataTypes_t>(arguments)...)
 	{
-
-		template <typename ...Types_t>
-		template <typename ...DataTypes_t>
-		concrete_message<Types_t...>::concrete_message(DataTypes_t &&...arguments) :
-			message(make_signature<Types_t...>()),
-			_data(std::forward<DataTypes_t>(arguments)...)
-		{
-		}
-
-
-		template <typename ...Types_t>
-		void *concrete_message<Types_t...>::data()
-		{
-			return reinterpret_cast<void *>(&_data);
-		}
-
-
-		template <typename ...Types_t>
-		std::shared_ptr<message> make_shared_message(Types_t &&...arguments)
-		{
-			return std::shared_ptr<message>(new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...));
-		}
-
 	}
+
+
+	template <typename ...Types_t>
+	void *concrete_message<Types_t...>::data()
+	{
+		return reinterpret_cast<void *>(&_data);
+	}
+
+
+	template <typename ...Types_t>
+	std::shared_ptr<message> make_shared_message(Types_t &&...arguments)
+	{
+		return std::shared_ptr<message>(new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...));
+	}
+
+}
 }
 

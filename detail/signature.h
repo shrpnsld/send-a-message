@@ -6,69 +6,64 @@
 #pragma once
 
 #include <typeindex>
-#include <type_traits>
 
 
-namespace sam
+namespace sam { namespace detail
 {
-	namespace detail
+
+	typedef std::type_index signature_t;
+
+	template <typename ...Types_t>
+	struct pack_t
 	{
+	};
 
-		typedef std::type_index signature_t;
+	template <typename ...Types_t>
+	signature_t make_signature();
 
-		template <typename ...Types_t>
-		struct pack_t
-		{
-		};
+	template <typename Callable_t>
+	signature_t make_signature(Callable_t &&);
 
-		template <typename ...Types_t>
-		signature_t make_signature();
+	template <typename Callable_t, typename Return_t, typename ...Arguments_t>
+	signature_t make_signature(Return_t (Callable_t::*)(Arguments_t...) const);
 
-		template <typename Callable_t>
-		signature_t make_signature(Callable_t &&);
+	template <typename Return_t, typename ...Arguments_t>
+	signature_t make_signature(Return_t (*)(Arguments_t...));
 
-		template <typename Callable_t, typename Return_t, typename ...Arguments_t>
-		signature_t make_signature(Return_t (Callable_t::*)(Arguments_t...) const);
-
-		template <typename Return_t, typename ...Arguments_t>
-		signature_t make_signature(Return_t (*)(Arguments_t...));
-
-	}
+}
 }
 
 
-namespace sam
+namespace sam { namespace detail
 {
-	namespace detail
+
+	template <typename ...Types_t>
+	signature_t make_signature()
 	{
-
-		template <typename ...Types_t>
-		signature_t make_signature()
-		{
-			return signature_t(typeid(pack_t<typename std::decay<Types_t>::type...>));
-		}
-
-
-		template <typename Callable_t, typename Return_t, typename ...Arguments_t>
-		signature_t make_signature(Return_t (Callable_t::*)(Arguments_t...) const)
-		{
-			return make_signature<Arguments_t...>();
-		}
-
-
-		template <typename Callable_t>
-		signature_t make_signature(Callable_t &&)
-		{
-			return make_signature(&Callable_t::operator ());
-		}
-
-
-		template <typename Return_t, typename ...Arguments_t>
-		signature_t make_signature(Return_t (*)(Arguments_t...))
-		{
-			return make_signature<Arguments_t...>();
-		}
-
+		return signature_t(typeid(pack_t<typename std::decay<Types_t>::type...>));
 	}
+
+
+	template <typename Callable_t, typename Return_t, typename ...Arguments_t>
+	signature_t make_signature(Return_t (Callable_t::*)(Arguments_t...) const)
+	{
+		return make_signature<Arguments_t...>();
+	}
+
+
+	template <typename Callable_t>
+	signature_t make_signature(Callable_t &&)
+	{
+		return make_signature(&Callable_t::operator ());
+	}
+
+
+	template <typename Return_t, typename ...Arguments_t>
+	signature_t make_signature(Return_t (*)(Arguments_t...))
+	{
+		return make_signature<Arguments_t...>();
+	}
+
+}
 }
 

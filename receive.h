@@ -19,6 +19,7 @@
 
 namespace sam
 {
+
 	template <typename ...Callables_t>
 	void receive(Callables_t &&...callables);
 

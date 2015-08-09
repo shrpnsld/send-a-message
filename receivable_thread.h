@@ -8,6 +8,7 @@
 #include <thread>
 #include <future>
 #include <utility>
+#include <functional>
 
 #include "detail/receivable_function.h"
 
