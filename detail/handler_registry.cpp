@@ -14,13 +14,6 @@ namespace sam
 	namespace detail
 	{
 
-		int register_handler(handlers_t &handlers, std::shared_ptr<handler> handler)
-		{
-			handlers.insert(std::make_pair(handler->signature(), handler));
-			return 0;
-		}
-
-
 		ctlcode_t default_control_code_handler(ctlcode_t control_code)
 		{
 			return control_code;
@@ -39,8 +32,8 @@ namespace sam
 			auto iterator = handlers.find(message_ptr->signature());
 			assert(iterator != handlers.end()); // if fails - handler for message signature not found
 
-			std::shared_ptr<handler> handler_ptr = iterator->second;
-			return handler_ptr->do_call(message_ptr->data());
+			const handler_t &handler = iterator->second;
+			return handler(message_ptr->data());
 		}
 
 	}
