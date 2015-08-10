@@ -15,6 +15,9 @@
 namespace sam { namespace detail
 {
 
+	//
+	// Module public
+
 	template <typename Type_t>
 	class queue
 	{

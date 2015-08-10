@@ -18,20 +18,27 @@
 namespace sam { namespace detail
 {
 
+	//
+	// Module public
+
 	typedef std::unordered_map<signature_t, handler_t> handlers_t;
 
-
-	template <typename ...Whatever_t>
-	void unpack(Whatever_t &&...);
-
-	template <typename Callable_t>
-	int register_handler(handlers_t &handlers, Callable_t &&callable);
 
 	template <typename ...Callables_t>
 	handlers_t register_handlers(Callables_t &&...callables);
 
 	template <typename ...Callables_t>
 	handlers_t register_handlers_with_timeout(Callables_t &&...callables);
+
+
+	//
+	// Module private
+
+	template <typename ...Whatever_t>
+	void unpack(Whatever_t &&...);
+
+	template <typename Callable_t>
+	int register_handler(handlers_t &handlers, Callable_t &&callable);
 
 	ctlcode_t default_control_code_handler(ctlcode_t control_code);
 	ctlcode_t default_timeout_handler(timeout_error);
@@ -43,22 +50,6 @@ namespace sam { namespace detail
 
 namespace sam { namespace detail
 {
-
-	template <typename ...Whatever_t>
-	void unpack(Whatever_t &&...)
-	{
-	}
-
-
-	template <typename Callable_t>
-	int register_handler(handlers_t &handlers, Callable_t &&callable)
-	{
-		signature_t signature = make_signature(std::forward<Callable_t>(callable));
-		handler_t handler = make_handler(std::forward<Callable_t>(callable));
-		handlers.insert(std::make_pair(signature, handler));
-		return 0;
-	}
-
 
 	template <typename ...Callables_t>
 	handlers_t register_handlers(Callables_t &&...callables)
@@ -88,6 +79,23 @@ namespace sam { namespace detail
 		}
 
 		return handlers;
+	}
+
+
+	template <typename ...Whatever_t>
+	void unpack(Whatever_t &&...)
+	{
+	}
+
+
+	template <typename Callable_t>
+	int register_handler(handlers_t &handlers, Callable_t &&callable)
+	{
+		signature_t signature = make_signature(callable);
+		handler_t handler = make_handler(std::forward<Callable_t>(callable));
+		handlers.insert(std::make_pair(signature, handler));
+
+		return 0;
 	}
 
 }

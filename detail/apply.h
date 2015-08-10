@@ -12,10 +12,24 @@
 namespace sam { namespace detail
 {
 
+	//
+	// Module public
+
+	template <typename Return_t, typename Callable_t, typename ...Arguments_t>
+	Return_t apply_tuple(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments);
+
+
+	//
+	// Module private
+
 	template <std::size_t ...>
 	struct sequence
 	{
 	};
+
+
+	template <typename Return_t, typename Callable_t, typename ...Arguments_t, size_t ...Indices>
+	Return_t apply_tuple_with_sequence(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>);
 
 
 	template <size_t Number, typename Sequence_t, typename ...Types_t>
@@ -42,13 +56,6 @@ namespace sam { namespace detail
 		typedef typename make_sequence_impl<0, sequence<>, Types_t...>::type type;
 	};
 
-
-	template <typename Return_t, typename Callable_t, typename ...Arguments_t, size_t ...Indices>
-	Return_t apply_impl(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>);
-
-	template <typename Return_t, typename Callable_t, typename ...Arguments_t>
-	Return_t apply(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments);
-
 }
 }
 
@@ -56,17 +63,19 @@ namespace sam { namespace detail
 namespace sam { namespace detail
 {
 
-	template <typename Return_t, typename Callable_t, typename ...Arguments_t, size_t ...Indices>
-	Return_t apply_impl(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>)
+	template <typename Return_t, typename Callable_t, typename ...Arguments_t>
+	Return_t apply_tuple(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments)
 	{
-		return callable(std::get<Indices>(arguments)...);
+		typedef typename make_sequence<Arguments_t...>::type concrete_sequence;
+
+		return apply_tuple_with_sequence<Return_t>(std::forward<Callable_t>(callable), arguments, concrete_sequence());
 	}
 
 
-	template <typename Return_t, typename Callable_t, typename ...Arguments_t>
-	Return_t apply(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments)
+	template <typename Return_t, typename Callable_t, typename ...Arguments_t, size_t ...Indices>
+	Return_t apply_tuple_with_sequence(Callable_t &&callable, const std::tuple<Arguments_t...> &arguments, sequence<Indices...>)
 	{
-		return apply_impl<Return_t>(std::forward<Callable_t>(callable), arguments, typename make_sequence<Arguments_t...>::type());
+		return callable(std::get<Indices>(arguments)...);
 	}
 
 }

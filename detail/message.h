@@ -15,6 +15,9 @@
 namespace sam { namespace detail
 {
 
+	//
+	// Module public
+
 	class message
 	{
 	public:
@@ -35,8 +38,8 @@ namespace sam { namespace detail
 		: public message
 	{
 	public:
-		template <typename ...DataTypes_t>
-		concrete_message(DataTypes_t &&...arguments);
+		template <typename ...Arguments_t>
+		concrete_message(Arguments_t &&...arguments);
 
 		virtual void *data() override;
 
@@ -56,10 +59,10 @@ namespace sam { namespace detail
 {
 
 	template <typename ...Types_t>
-	template <typename ...DataTypes_t>
-	concrete_message<Types_t...>::concrete_message(DataTypes_t &&...arguments) :
+	template <typename ...Arguments_t>
+	concrete_message<Types_t...>::concrete_message(Arguments_t &&...arguments) :
 		message(make_signature<Types_t...>()),
-		_data(std::forward<DataTypes_t>(arguments)...)
+		_data(std::forward<Arguments_t>(arguments)...)
 	{
 	}
 

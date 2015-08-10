@@ -11,24 +11,32 @@
 namespace sam { namespace detail
 {
 
+	//
+	// Module public
+
 	typedef std::type_index signature_t;
 
-	template <typename ...Types_t>
-	struct pack_t
-	{
-	};
 
 	template <typename ...Types_t>
 	signature_t make_signature();
 
 	template <typename Callable_t>
-	signature_t make_signature(Callable_t &&);
+	signature_t make_signature(const Callable_t &);
 
 	template <typename Callable_t, typename Return_t, typename ...Arguments_t>
 	signature_t make_signature(Return_t (Callable_t::*)(Arguments_t...) const);
 
 	template <typename Return_t, typename ...Arguments_t>
 	signature_t make_signature(Return_t (*)(Arguments_t...));
+
+
+	//
+	// Module private
+
+	template <typename ...Types_t>
+	struct pack_t
+	{
+	};
 
 }
 }
@@ -52,7 +60,7 @@ namespace sam { namespace detail
 
 
 	template <typename Callable_t>
-	signature_t make_signature(Callable_t &&)
+	signature_t make_signature(const Callable_t &)
 	{
 		return make_signature(&Callable_t::operator ());
 	}
