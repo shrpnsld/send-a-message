@@ -63,12 +63,12 @@ void receiver()
 	sam::receive(
 		[](int i, double d)
 		{
-			printf("message: %i and %f", i, d);
+			printf("message: %i and %f\n", i, d);
 		},
 
 		[](const char *cstring)
 		{
-			printf("message: '%s'", cstring);
+			printf("message: '%s'\n", cstring);
 		}
 	);
 }
