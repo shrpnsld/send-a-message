@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 #include <memory>
+#include <functional>
 
 #include "signature.h"
 
@@ -18,38 +19,42 @@ namespace sam { namespace detail
 	//
 	// Module public
 
-	class message
+	class alignas(signature_t) message
 	{
 	public:
-		message(signature_t signature);
-		virtual ~message() = 0;
-
 		const signature_t signature() const;
-
-		virtual void *data() = 0;
+		void *data();
 
 	private:
 		signature_t _signature;
+		void *_data; // address of this field is used as an address of concrete_message::_data. this pointer is never dereferenced.
 	};
 
 
 	template <typename ...Types_t>
-	class concrete_message
-		: public message
+	using concrete_message_deleter_t = void (*)(void *);
+
+	template <typename ...Types_t>
+	std::unique_ptr<message, concrete_message_deleter_t<Types_t...>> make_message(Types_t &&...arguments);
+
+
+	//
+	// Module private
+
+	template <typename ...Types_t>
+	class alignas(signature_t) concrete_message
 	{
 	public:
-		template <typename ...Arguments_t>
-		concrete_message(Arguments_t &&...arguments);
-
-		virtual void *data() override;
+		concrete_message(Types_t &&...arguments);
 
 	private:
+		signature_t _signature;
 		std::tuple<Types_t...> _data;
 	};
 
 
 	template <typename ...Types_t>
-	std::shared_ptr<message> make_shared_message(Types_t &&...arguments);
+	void concrete_message_deleter(void *pointer);
 
 }
 }
@@ -59,25 +64,28 @@ namespace sam { namespace detail
 {
 
 	template <typename ...Types_t>
-	template <typename ...Arguments_t>
-	concrete_message<Types_t...>::concrete_message(Arguments_t &&...arguments) :
-		message(make_signature<Types_t...>()),
-		_data(std::forward<Arguments_t>(arguments)...)
+	std::unique_ptr<message, concrete_message_deleter_t<Types_t...>> make_message(Types_t &&...arguments)
+	{
+		auto concrete_message_pointer = new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...);
+		auto deleter = concrete_message_deleter<Types_t...>;
+
+		return {reinterpret_cast<message *>(concrete_message_pointer), deleter};
+	}
+
+
+	template <typename ...Types_t>
+	concrete_message<Types_t...>::concrete_message(Types_t &&...arguments) :
+		_signature(make_signature<Types_t...>()),
+		_data(std::forward<Types_t>(arguments)...)
 	{
 	}
 
 
 	template <typename ...Types_t>
-	void *concrete_message<Types_t...>::data()
+	void concrete_message_deleter(void *pointer)
 	{
-		return reinterpret_cast<void *>(&_data);
-	}
-
-
-	template <typename ...Types_t>
-	std::shared_ptr<message> make_shared_message(Types_t &&...arguments)
-	{
-		return std::shared_ptr<message>(new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...));
+		concrete_message<Types_t...> *concrete_message_pointer = reinterpret_cast<concrete_message<Types_t...> *>(pointer);
+		delete concrete_message_pointer;
 	}
 
 }

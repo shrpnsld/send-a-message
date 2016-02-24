@@ -37,8 +37,8 @@ namespace sam
 	template <typename ...Arguments_t>
 	void mailbox::send(Arguments_t &&...arguments)
 	{
-		std::shared_ptr<detail::message> message_ptr = detail::make_shared_message(std::forward<Arguments_t>(arguments)...);
-		_message_queue.push(message_ptr);
+		std::unique_ptr<detail::message, std::function<void (void *)>> message_ptr = detail::make_message(std::forward<Arguments_t>(arguments)...);
+		_message_queue.push(std::move(message_ptr));
 	}
 
 }

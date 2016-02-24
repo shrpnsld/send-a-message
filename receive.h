@@ -59,7 +59,7 @@ namespace sam
 			std::shared_ptr<detail::message> message_ptr = message_queue.wait_for_and_pop(timeout);
 			if (message_ptr == nullptr)
 			{
-				message_ptr = detail::make_shared_message(timeout_error());
+				message_ptr = detail::make_message(timeout_error());
 			}
 
 			ctlcode_t control_code = detail::dispatch_message(handlers, message_ptr);
