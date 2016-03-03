@@ -14,6 +14,12 @@ namespace sam { namespace detail
 		return _signature;
 	}
 
+
+	void *message::data()
+	{
+		return reinterpret_cast<void *>(&_data);
+	}
+
 }
 }
 
