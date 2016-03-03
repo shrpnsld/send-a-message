@@ -11,6 +11,8 @@
 #include <condition_variable>
 #include <chrono>
 
+#include "ts_var.h"
+
 
 namespace sam { namespace detail
 {

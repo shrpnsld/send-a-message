@@ -21,7 +21,7 @@ namespace sam { namespace detail
 	//
 	// Module public
 
-	typedef std::unordered_map<signature_t, handler_t> handlers_t;
+	using handlers_t = std::unordered_map<signature_t, handler_t>;
 
 
 	template <typename ...Callables_t>

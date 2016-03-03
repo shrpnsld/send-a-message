@@ -20,7 +20,7 @@ namespace sam { namespace detail
 	//
 	// Module public
 
-	typedef std::function<ctlcode_t (void *)> handler_t;
+	using handler_t = std::function<ctlcode_t (void *)>;
 
 
 	template <typename ...Arguments_t>
@@ -58,7 +58,7 @@ namespace sam { namespace detail
 	template <typename ...Arguments_t>
 	handler_t make_handler(ctlcode_t (*function_pointer)(Arguments_t...))
 	{
-		typedef ctlcode_t (*ctlcodefunc_t)(Arguments_t...);
+		using ctlcodefunc_t = ctlcode_t (*)(Arguments_t...);
 
 		return make_handler_from_ctlcode_callable<ctlcodefunc_t &, Arguments_t...>(function_pointer);
 	}
@@ -67,7 +67,7 @@ namespace sam { namespace detail
 	template <typename ...Arguments_t>
 	handler_t make_handler(void (*function_pointer)(Arguments_t...))
 	{
-		typedef void (*voidfunc_t)(Arguments_t...);
+		using voidfunc_t = void (*)(Arguments_t...);
 
 		return make_handler_from_void_callable<voidfunc_t &, Arguments_t...>(function_pointer);
 	}
@@ -99,7 +99,7 @@ namespace sam { namespace detail
 	{
 		handler_t handler = [callable](void *context) -> ctlcode_t
 		{
-			typedef std::tuple<Arguments_t...> arguments_t;
+			using arguments_t = std::tuple<Arguments_t...>;
 
 			arguments_t &arguments = *reinterpret_cast<arguments_t *>(context);
 			return apply_tuple<ctlcode_t>(callable, arguments);
@@ -114,7 +114,7 @@ namespace sam { namespace detail
 	{
 		handler_t handler = [callable](void *context) -> ctlcode_t
 		{
-			typedef std::tuple<Arguments_t...> arguments_t;
+			using arguments_t = std::tuple<Arguments_t...>;
 
 			arguments_t &arguments = *reinterpret_cast<arguments_t *>(context);
 			apply_tuple<void>(callable, arguments);

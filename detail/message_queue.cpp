@@ -14,7 +14,7 @@
 namespace sam { namespace detail
 {
 
-	typedef std::map<std::thread::id, queue<message>> msgqueuelst_t;
+	using msgqueuelst_t = std::map<std::thread::id, queue<message>>;
 
 	std::mutex _mutex;
 	msgqueuelst_t _message_queues;

@@ -14,7 +14,7 @@ namespace sam { namespace detail
 	//
 	// Module public
 
-	typedef std::type_index signature_t;
+	using signature_t = std::type_index;
 
 
 	template <typename ...Types_t>
