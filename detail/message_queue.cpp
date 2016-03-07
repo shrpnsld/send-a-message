@@ -6,6 +6,7 @@
 #include <map>
 #include <thread>
 #include <mutex>
+#include <tuple>
 #include <cassert>
 
 #include "message_queue.h"
@@ -33,7 +34,7 @@ namespace sam { namespace detail
 	{
 		std::lock_guard<std::mutex> lock_guard(_mutex);
 
-		_message_queues.emplace(_id, queue<message>());
+		_message_queues.emplace(std::piecewise_construct, std::forward_as_tuple(_id), std::forward_as_tuple());
 	}
 
 
