@@ -31,8 +31,8 @@ namespace sam { namespace detail
 		std::shared_ptr<Type_t> pop();
 		std::shared_ptr<Type_t> wait_and_pop();
 
-		template <typename Rep, typename Period>
-		std::shared_ptr<Type_t> wait_for_and_pop(const std::chrono::duration<Rep, Period> &timeout_duration);
+		template <typename Rep_t, typename Period_t>
+		std::shared_ptr<Type_t> wait_for_and_pop(const std::chrono::duration<Rep_t, Period_t> &timeout_duration);
 
 	private:
 		struct node_t
@@ -99,9 +99,9 @@ namespace sam { namespace detail
 	{
 		_tail.wait(
 			[this](node_t * const &tail)
-    		{
-    			return _head.get() != tail;
-    		});
+			{
+				return _head.get() != tail;
+			});
 
 		std::shared_ptr<Type_t> data = _head->data;
 		std::unique_ptr<node_t> next = std::move(_head->next);
@@ -112,15 +112,15 @@ namespace sam { namespace detail
 
 
 	template <typename Type_t>
-	template <typename Rep, typename Period>
-	std::shared_ptr<Type_t> queue<Type_t>::wait_for_and_pop(const std::chrono::duration<Rep, Period> &timeout_duration)
+	template <typename Rep_t, typename Period_t>
+	std::shared_ptr<Type_t> queue<Type_t>::wait_for_and_pop(const std::chrono::duration<Rep_t, Period_t> &timeout_duration)
 	{
 		bool has_messages;
 		_tail.wait_for(has_messages, timeout_duration,
-    		[this](node_t * const &tail)
-    		{
-    			return _head.get() != tail;
-    		});
+			[this](node_t * const &tail)
+			{
+				return _head.get() != tail;
+			});
 
 		if (!has_messages)
 		{

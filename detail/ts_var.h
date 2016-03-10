@@ -30,8 +30,8 @@ namespace sam { namespace detail
 
 		std::unique_lock<std::mutex> wait(const std::function<bool (const Type_t &value)> &predicate);
 
-		template <typename Rep, typename Period>
-		std::unique_lock<std::mutex> wait_for(bool &happened, const std::chrono::duration<Rep, Period> &timeout_duration, const std::function<bool (const Type_t &value)> &predicate);
+		template <typename Rep_t, typename Period_t>
+		std::unique_lock<std::mutex> wait_for(bool &happened, const std::chrono::duration<Rep_t, Period_t> &timeout_duration, const std::function<bool (const Type_t &value)> &predicate);
 
 	private:
 		Type_t _value;
@@ -65,25 +65,25 @@ namespace sam { namespace detail
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
 		_ready.wait(lock,
-    		[&predicate, this]
-    		{
-    			return predicate(_value);
-    		});
+			[&predicate, this]
+			{
+				return predicate(_value);
+			});
 
 		return std::move(lock);
 	}
 
 
     template <typename Type_t>
-	template <typename Rep, typename Period>
-	std::unique_lock<std::mutex> ts_var<Type_t>::wait_for(bool &happened, const std::chrono::duration<Rep, Period> &timeout_duration, const std::function<bool (const Type_t &value)> &predicate)
+	template <typename Rep_t, typename Period_t>
+	std::unique_lock<std::mutex> ts_var<Type_t>::wait_for(bool &happened, const std::chrono::duration<Rep_t, Period_t> &timeout_duration, const std::function<bool (const Type_t &value)> &predicate)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
 		happened = _ready.wait_for(lock, timeout_duration,
 			[&predicate, this]
-    		{
-    			return predicate(_value);
-    		});
+			{
+				return predicate(_value);
+			});
 
 		return std::move(lock);
 	}

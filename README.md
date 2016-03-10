@@ -33,8 +33,8 @@ void sam::receive(Callables_t &&...callables);
 ```
 
 ```C++
-template <typename Rep, typename Period, typename ...Callables_t>
-void sam::receive_for(const std::chrono::duration<Rep, Period> &timeout, Callables_t &&...callables);
+template <typename Rep_t, typename Period_t, typename ...Callables_t>
+void sam::receive_for(const std::chrono::duration<Rep_t, Period_t> &timeout, Callables_t &&...callables);
 ```
 
 ```C++
