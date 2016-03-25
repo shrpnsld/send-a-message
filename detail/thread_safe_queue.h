@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <chrono>
 
-#include "ts_var.h"
+#include "thread_safe_variable.h"
 
 
 namespace sam { namespace detail
