@@ -17,8 +17,8 @@ namespace sam { namespace detail
 	class alignas(signature_t) message
 	{
 	public:
-		const signature_t signature() const;
-		void *data();
+		const signature_t signature() const noexcept;
+		void *data() noexcept;
 
 	private:
 		signature_t _signature;
@@ -40,7 +40,7 @@ namespace sam { namespace detail
 	class alignas(signature_t) concrete_message
 	{
 	public:
-		concrete_message(Types_t &&...arguments);
+		concrete_message(Types_t &&...arguments) noexcept;
 
 	private:
 		signature_t _signature;
@@ -61,17 +61,18 @@ namespace sam { namespace detail
 	template <typename ...Types_t>
 	std::unique_ptr<message, concrete_message_deleter_t<Types_t...>> make_message(Types_t &&...arguments)
 	{
-		auto concrete_message_pointer = new concrete_message<Types_t...>(std::forward<Types_t>(arguments)...);
-		auto deleter = concrete_message_deleter<Types_t...>;
+		auto *concrete_message_pointer {new concrete_message<Types_t...> {std::forward<Types_t>(arguments)...}};
+		auto deleter {concrete_message_deleter<Types_t...>};
 
 		return {reinterpret_cast<message *>(concrete_message_pointer), deleter};
 	}
 
 
 	template <typename ...Types_t>
-	concrete_message<Types_t...>::concrete_message(Types_t &&...arguments) :
-		_signature(make_signature<Types_t...>()),
-		_data(std::forward<Types_t>(arguments)...)
+	concrete_message<Types_t...>::concrete_message(Types_t &&...arguments) noexcept
+		:
+		_signature {make_signature<Types_t...>()},
+		_data {std::forward<Types_t>(arguments)...}
 	{
 	}
 
@@ -79,7 +80,7 @@ namespace sam { namespace detail
 	template <typename ...Types_t>
 	void concrete_message_deleter(void *pointer)
 	{
-		concrete_message<Types_t...> *concrete_message_pointer = reinterpret_cast<concrete_message<Types_t...> *>(pointer);
+		concrete_message<Types_t...> *concrete_message_pointer {reinterpret_cast<concrete_message<Types_t...> *>(pointer)};
 		delete concrete_message_pointer;
 	}
 

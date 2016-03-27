@@ -11,22 +11,22 @@ namespace sam { namespace detail
 {
 
 	template <typename Type_t>
-	class ts_var
+	class ts_variable
 	{
 	public:
-		ts_var(const Type_t &value);
-		ts_var(Type_t &&value);
-		ts_var(const ts_var &another) = delete;
-		ts_var(ts_var &&another) = default;
+		ts_variable(const Type_t &value) noexcept;
+		ts_variable(Type_t &&value) noexcept;
+		ts_variable(const ts_variable &another) = delete;
+		ts_variable(ts_variable &&another) = default;
 
-		ts_var &operator =(const ts_var &another) = delete;
-		ts_var &operator =(ts_var &&another) = default;
-		ts_var &operator =(const Type_t &value);
-		ts_var &operator =(Type_t &&value);
+		ts_variable &operator =(const ts_variable &another) = delete;
+		ts_variable &operator =(ts_variable &&another) = default;
+		ts_variable &operator =(const Type_t &value);
+		ts_variable &operator =(Type_t &&value);
 
 		operator Type_t();
 
-		ts_var<Type_t> &operator =(const std::function<void (Type_t &)> &modifier);
+		ts_variable<Type_t> &operator =(const std::function<void (Type_t &)> &modifier);
 
 		std::unique_lock<std::mutex> wait(const std::function<bool (const Type_t &value)> &predicate);
 
@@ -47,23 +47,25 @@ namespace sam { namespace detail
 {
 
 	template <typename Type_t>
-	ts_var<Type_t>::ts_var(const Type_t &value) :
-		_value(value)
+	ts_variable<Type_t>::ts_variable(const Type_t &value) noexcept
+		:
+		_value {value}
 	{
 	}
 
 
 	template <typename Type_t>
-	ts_var<Type_t>::ts_var(Type_t &&value) :
-		_value(std::move(value))
+	ts_variable<Type_t>::ts_variable(Type_t &&value) noexcept
+		:
+		_value {std::move(value)}
 	{
 	}
 
 
 	template <typename Type_t>
-	std::unique_lock<std::mutex> ts_var<Type_t>::wait(const std::function<bool (const Type_t &)> &predicate)
+	std::unique_lock<std::mutex> ts_variable<Type_t>::wait(const std::function<bool (const Type_t &)> &predicate)
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
+		std::unique_lock<std::mutex> lock {_mutex};
 		_ready.wait(lock,
 			[&predicate, this]
 			{
@@ -76,9 +78,9 @@ namespace sam { namespace detail
 
     template <typename Type_t>
 	template <typename Rep_t, typename Period_t>
-	std::unique_lock<std::mutex> ts_var<Type_t>::wait_for(bool &happened, const std::chrono::duration<Rep_t, Period_t> &timeout_duration, const std::function<bool (const Type_t &value)> &predicate)
+	std::unique_lock<std::mutex> ts_variable<Type_t>::wait_for(bool &happened, const std::chrono::duration<Rep_t, Period_t> &timeout_duration, const std::function<bool (const Type_t &value)> &predicate)
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
+		std::unique_lock<std::mutex> lock {_mutex};
 		happened = _ready.wait_for(lock, timeout_duration,
 			[&predicate, this]
 			{
@@ -90,19 +92,19 @@ namespace sam { namespace detail
 
 
 	template <typename Type_t>
-	ts_var<Type_t>::operator Type_t()
+	ts_variable<Type_t>::operator Type_t()
 	{
-		std::lock_guard<std::mutex> guard(_mutex);
+		std::lock_guard<std::mutex> guard {_mutex};
 
 		return _value;
 	}
 
 
 	template <typename Type_t>
-	ts_var<Type_t> &ts_var<Type_t>::operator =(const Type_t &value)
+	ts_variable<Type_t> &ts_variable<Type_t>::operator =(const Type_t &value)
 	{
 		{
-			std::lock_guard<std::mutex> guard(_mutex);
+			std::lock_guard<std::mutex> guard {_mutex};
 			_value = value;
 		}
 
@@ -113,10 +115,10 @@ namespace sam { namespace detail
 
 
 	template <typename Type_t>
-	ts_var<Type_t> &ts_var<Type_t>::operator =(Type_t &&value)
+	ts_variable<Type_t> &ts_variable<Type_t>::operator =(Type_t &&value)
 	{
 		{
-			std::lock_guard<std::mutex> guard(_mutex);
+			std::lock_guard<std::mutex> guard {_mutex};
 			_value = std::move(value);
 		}
 
@@ -127,10 +129,10 @@ namespace sam { namespace detail
 
 
 	template <typename Type_t>
-	ts_var<Type_t> &ts_var<Type_t>::operator =(const std::function<void (Type_t &)> &modifier)
+	ts_variable<Type_t> &ts_variable<Type_t>::operator =(const std::function<void (Type_t &)> &modifier)
 	{
 		{
-			std::lock_guard<std::mutex> guard(_mutex);
+			std::lock_guard<std::mutex> guard {_mutex};
 			modifier(_value);
 		}
 

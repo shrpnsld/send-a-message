@@ -4,13 +4,13 @@
 namespace sam { namespace detail
 {
 
-	const signature_t message::signature() const
+	const signature_t message::signature() const noexcept
 	{
 		return _signature;
 	}
 
 
-	void *message::data()
+	void *message::data() noexcept
 	{
 		return reinterpret_cast<void *>(&_data);
 	}

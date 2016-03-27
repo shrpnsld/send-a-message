@@ -12,7 +12,7 @@ namespace sam { namespace detail
 	//
 	// Module public
 
-	using msgqueue_t = queue<message>;
+	using msgqueue_t = ts_queue<message>;
 
 
 	msgqueue_t &message_queue_for_thread(std::thread::id id);
