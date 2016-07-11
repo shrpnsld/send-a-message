@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <utility>
 
-#include "../flags.h"
-#include "signature.h"
-#include "handler.h"
-#include "message.h"
+#include "../flags.hpp"
+#include "signature.hpp"
+#include "handler.hpp"
+#include "message.hpp"
 
 
 namespace sam { namespace detail

@@ -4,8 +4,8 @@
 #include <memory>
 #include <utility>
 
-#include "detail/message.h"
-#include "detail/message_queue.h"
+#include "detail/message.hpp"
+#include "detail/message_queue.hpp"
 
 
 namespace sam

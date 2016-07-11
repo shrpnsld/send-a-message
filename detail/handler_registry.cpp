@@ -1,7 +1,7 @@
 #include <thread>
 #include <cassert>
 
-#include "handler_registry.h"
+#include "handler_registry.hpp"
 
 
 namespace sam { namespace detail

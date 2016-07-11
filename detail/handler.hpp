@@ -5,8 +5,8 @@
 #include <tuple>
 #include <utility>
 
-#include "../flags.h"
-#include "apply.h"
+#include "../flags.hpp"
+#include "apply.hpp"
 
 
 namespace sam { namespace detail

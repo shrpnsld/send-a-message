@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "message_queue.h"
+#include "message_queue.hpp"
 
 
 namespace sam { namespace detail

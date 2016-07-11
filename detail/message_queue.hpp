@@ -2,8 +2,8 @@
 
 #include <thread>
 
-#include "thread_safe_queue.h"
-#include "message.h"
+#include "thread_safe_queue.hpp"
+#include "message.hpp"
 
 
 namespace sam { namespace detail

@@ -1,4 +1,4 @@
-#include "mailbox.h"
+#include "mailbox.hpp"
 
 
 namespace sam

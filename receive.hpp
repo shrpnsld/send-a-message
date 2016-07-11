@@ -5,11 +5,11 @@
 #include <memory>
 #include <utility>
 
-#include "flags.h"
-#include "detail/handler.h"
-#include "detail/handler_registry.h"
-#include "detail/message.h"
-#include "detail/message_queue.h"
+#include "flags.hpp"
+#include "detail/handler.hpp"
+#include "detail/handler_registry.hpp"
+#include "detail/message.hpp"
+#include "detail/message_queue.hpp"
 
 
 namespace sam

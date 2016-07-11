@@ -5,7 +5,7 @@
 #include <memory>
 #include <functional>
 
-#include "signature.h"
+#include "signature.hpp"
 
 
 namespace sam { namespace detail
